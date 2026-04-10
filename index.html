@@ -31,7 +31,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Asëa">
 <meta name="theme-color" content="#003366">
-  <link rel="manifest" href="/manifest.json">
 <title>Asëa</title>
 <!--
   ASËA v6.4 — Architecture Notes
@@ -122,13 +121,13 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
-body{font-family:&quot;DM Sans&quot;,sans-serif;font-weight:400;color:var(--tx);background:var(--bg);min-height:100vh;-webkit-font-smoothing:antialiased;overflow:hidden}
+body{font-family:&quot;DM Sans&quot;,sans-serif;font-weight:400;color:var(--tx);background:var(--bg);min-height:100dvh;-webkit-font-smoothing:antialiased;overflow:hidden}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,textarea{font-family:inherit}
 
 /* ══ APP SHELL ══ */
 #app{
-  max-width:480px;margin:0 auto;height:100vh;
+  max-width:480px;margin:0 auto;height:100dvh;
   display:flex;flex-direction:column;background:var(--bg);
   position:relative;overflow:hidden;
 }
