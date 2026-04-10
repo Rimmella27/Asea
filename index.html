@@ -32,7 +32,7 @@
 <meta name="apple-mobile-web-app-title" content="Asëa">
 <meta name="theme-color" content="#003366">
 <link rel="manifest" href="/manifest.json">
-<title>Asëa</title>
+<title>Asëavv</title>
 <!--
   ASËA v6.4 — Architecture Notes
   ══════════════════════════════════
@@ -1250,6 +1250,7 @@ input,textarea{font-family:inherit}
 /* ══ HYDRATION TRACKER SCREEN ══ */
 .fluid-screen{
   position:absolute;inset:0;background:var(--bg);
+  padding-top:env(safe-area-inset-top,0px);
   transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);
   z-index:700;display:flex;flex-direction:column;overflow:hidden;
 }
@@ -1275,7 +1276,8 @@ input,textarea{font-family:inherit}
 
 /* ── Hero ring section ── */
 .hyd-hero{
-  flex-shrink:0;display:flex;flex-direction:column;align-items:center;
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;align-items:center;
   padding:10px 16px 0;background:var(--bg);
 }
 .hyd-ring-outer{
@@ -1865,6 +1867,42 @@ input,textarea{font-family:inherit}
   margin:4px -16px 0;
 }
 
+/* BP full screen */
+.bp-screen-scroll{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 16px calc(40px + env(safe-area-inset-bottom,0px));
+}
+.bp-screen-avg{
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:16px;margin-bottom:16px;box-shadow:var(--sh);
+}
+.bp-screen-form{
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:16px;margin-bottom:16px;box-shadow:var(--sh);
+}
+.bp-history-lbl{
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--mt);margin:4px 0 12px;
+}
+
+/* Glucose full screen */
+.gluc-screen-scroll{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 16px calc(40px + env(safe-area-inset-bottom,0px));
+}
+.gluc-screen-latest{
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:16px;margin-bottom:16px;box-shadow:var(--sh);
+}
+.gluc-screen-form{
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:16px;margin-bottom:16px;box-shadow:var(--sh);
+}
+.gluc-history-section-lbl{
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--mt);margin:4px 0 12px;
+}
+
 /* Biometrics card */
 .bio-card{
   background:var(--sf);border:1px solid var(--bd);
@@ -1922,6 +1960,66 @@ input,textarea{font-family:inherit}
 }
 .body-glance-val.glance-empty{font-size:11px;color:var(--mt);font-family:&quot;DM Sans&quot;,sans-serif;}
 .body-glance-lbl{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mt);}
+/* Digestion full screen */
+.gi-screen-scroll{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 16px calc(40px + env(safe-area-inset-bottom,0px));
+}
+.gi-screen-today{
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:16px;margin-bottom:16px;box-shadow:var(--sh);
+}
+.gi-screen-history-lbl{
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--mt);margin:4px 0 12px;
+}
+
+/* 2×2 metric tile grid */
+.body-metric-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin:12px 0 14px;
+}
+.body-metric-tile{
+  background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:16px 14px 14px;box-shadow:var(--sh);
+  display:flex;flex-direction:column;align-items:flex-start;
+  cursor:pointer;transition:background .15s;min-height:100px;
+  border-left:3px solid var(--tile-accent,var(--bd));
+}
+.body-metric-tile:active{background:var(--bg2);}
+.body-metric-tile-ico-wrap{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--tile-accent-bg,var(--accp));
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:10px;flex-shrink:0;
+}
+.body-metric-tile-ico{font-size:20px;}
+.body-metric-tile-name{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px;}
+.body-metric-tile-sub{font-size:11px;color:var(--mt);line-height:1.5;}
+.body-metric-tile-sub.has-data{color:var(--tx);font-weight:500;}
+/* Metric detail sheet — full-height slide-up */
+.metric-detail-sheet{
+  position:fixed;left:0;right:0;bottom:0;
+  max-width:480px;margin:0 auto;
+  background:var(--sf);border-radius:20px 20px 0 0;
+  z-index:670;max-height:90vh;
+  display:flex;flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.metric-detail-sheet.open{transform:translateY(0);}
+.metric-detail-sheet-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:12px auto 0;flex-shrink:0;}
+.metric-detail-sheet-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px 10px;flex-shrink:0;
+  border-bottom:1px solid var(--bd);
+}
+.metric-detail-sheet-title{font-size:16px;font-weight:600;color:var(--tx);}
+.metric-detail-sheet-close{
+  background:none;border:none;font-size:22px;color:var(--mt);
+  cursor:pointer;padding:0 4px;line-height:1;
+}
+.metric-detail-sheet-body{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
 /* Log a Reading card with metric tabs */
 .body-log-card{
   background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);
@@ -2626,6 +2724,11 @@ input,textarea{font-family:inherit}
   <div id="scr-settings" class="screen">
     <div class="scroll-body">
 
+      <div class="settings-section-title">Profile</div>
+      <div class="settings-row" id="settingsBioRow">
+        <!-- rendered by BodyScreen on settings open -->
+      </div>
+
       <div class="settings-section-title">Data &amp; Export</div>
       <div class="settings-row">
 
@@ -2929,19 +3032,97 @@ input,textarea{font-family:inherit}
 
 
     <!-- GI / BM LOG SHEET -->
-  <div class="sheet-overlay" id="giSheetOv" onclick="GILog.closeSheet()" style="z-index:650;"></div>
-  <div class="sheet" id="giSheet" style="z-index:660;max-height:88vh;">
+  <div class="sheet-overlay" id="giSheetOv" onclick="GILog.closeSheet()" style="z-index:720;"></div>
+  <div class="sheet" id="giSheet" style="z-index:730;max-height:88vh;">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Bowel Movement</div>
+    <div class="sheet-title">Log Digestion</div>
     <div class="gi-sheet-body" id="giSheetBody"></div>
   </div>
 
   <!-- GLUCOSE LOG SHEET -->
-  <div class="sheet-overlay" id="glucSheetOv" onclick="GlucoseModule.closeSheet()" style="z-index:650;"></div>
-  <div class="sheet" id="glucSheet" style="z-index:660;max-height:70vh;">
+  <div class="sheet-overlay" id="glucSheetOv" onclick="GlucoseModule.closeSheet()" style="z-index:720;"></div>
+  <div class="sheet" id="glucSheet" style="z-index:730;max-height:70vh;">
     <div class="sheet-handle"></div>
     <div class="sheet-title" id="glucSheetTitle">Log Glucose</div>
     <div class="gluc-sheet-body" id="glucSheetBody"></div>
+  </div>
+
+  <!-- BP FULL SCREEN -->
+  <div class="fluid-screen" id="bpScreen" style="z-index:710;">
+    <div class="hyd-header">
+      <button class="hyd-back-btn" onclick="BPModule.closeScreen()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="hyd-title">Blood Pressure</div>
+    </div>
+    <div class="bp-screen-scroll" id="bpScreenScroll">
+      <!-- rendered by BPModule.renderScreen() -->
+    </div>
+  </div>
+
+  <!-- GLUCOSE FULL SCREEN -->
+  <div class="fluid-screen" id="glucScreen" style="z-index:710;">
+    <div class="hyd-header">
+      <button class="hyd-back-btn" onclick="GlucoseModule.closeScreen()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="hyd-title">Glucose</div>
+    </div>
+    <div class="gluc-screen-scroll" id="glucScreenScroll">
+      <!-- rendered by GlucoseModule.renderScreen() -->
+    </div>
+  </div>
+
+  <!-- DIGESTION FULL SCREEN -->
+  <div class="fluid-screen" id="giScreen" style="z-index:710;">
+    <div class="hyd-header">
+      <button class="hyd-back-btn" onclick="GILog.closeScreen()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="hyd-title">Digestion</div>
+    </div>
+    <div class="gi-screen-scroll" id="giScreenScroll">
+      <!-- rendered by GILog.renderScreen() -->
+    </div>
+  </div>
+
+  <!-- METRIC DETAIL SHEETS (Body tab cards → slide up) -->
+  <div class="sheet-overlay" id="metricSheetOv" onclick="BodyScreen.closeMetric()" style="z-index:665;"></div>
+
+  <div class="metric-detail-sheet" id="metricSheetFluids" style="z-index:670;">
+    <div class="metric-detail-sheet-handle"></div>
+    <div class="metric-detail-sheet-hdr">
+      <div class="metric-detail-sheet-title">💧 Hydration</div>
+      <button class="metric-detail-sheet-close" onclick="BodyScreen.closeMetric()">×</button>
+    </div>
+    <div class="metric-detail-sheet-body" id="metricBodyFluids"></div>
+  </div>
+
+  <div class="metric-detail-sheet" id="metricSheetDigestion" style="z-index:670;">
+    <div class="metric-detail-sheet-handle"></div>
+    <div class="metric-detail-sheet-hdr">
+      <div class="metric-detail-sheet-title">💩 Digestion</div>
+      <button class="metric-detail-sheet-close" onclick="BodyScreen.closeMetric()">×</button>
+    </div>
+    <div class="metric-detail-sheet-body" id="metricBodyDigestion"></div>
+  </div>
+
+  <div class="metric-detail-sheet" id="metricSheetBP" style="z-index:670;">
+    <div class="metric-detail-sheet-handle"></div>
+    <div class="metric-detail-sheet-hdr">
+      <div class="metric-detail-sheet-title">💓 Blood Pressure</div>
+      <button class="metric-detail-sheet-close" onclick="BodyScreen.closeMetric()">×</button>
+    </div>
+    <div class="metric-detail-sheet-body" id="metricBodyBP"></div>
+  </div>
+
+  <div class="metric-detail-sheet" id="metricSheetGlucose" style="z-index:670;">
+    <div class="metric-detail-sheet-handle"></div>
+    <div class="metric-detail-sheet-hdr">
+      <div class="metric-detail-sheet-title">🩸 Glucose</div>
+      <button class="metric-detail-sheet-close" onclick="BodyScreen.closeMetric()">×</button>
+    </div>
+    <div class="metric-detail-sheet-body" id="metricBodyGlucose"></div>
   </div>
 
   <!-- DRINK LIBRARY MANAGEMENT SCREEN (z:780) -->
@@ -3236,6 +3417,7 @@ var App=(function(){
     S.ui.scr=scr;
     // Render Body screen when navigating to you
     if(scr==='you'&&typeof BodyScreen!=='undefined')BodyScreen.render();
+    if(scr==='settings'&&typeof BodyScreen!=='undefined')BodyScreen.renderSettings();
     // Render Insights when navigating to insights
     if(scr==='insights'&&typeof Insights!=='undefined')Insights.render();
   }
@@ -6012,6 +6194,7 @@ var GILog=(function(){
     DB.sched();
     closeSheet();
     if(typeof BodyScreen!=='undefined')BodyScreen.render();
+    requestAnimationFrame(function(){GILog.renderScreen();});
     var t=document.getElementById('toast');
     if(t){t.textContent='Logged. Watching for patterns…';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2600);}
   }
@@ -6138,7 +6321,123 @@ var GILog=(function(){
     DB.sched();if(typeof BodyScreen!=='undefined')BodyScreen.render();
   }
 
-  return{openSheet,closeSheet,pickCons,pickColor,toggleSym,pickIntensity,toggleCtx,nextStep,backTo,save,del};
+  // Opens the Digestion full screen
+  function openScreen(){
+    renderScreen();
+    document.getElementById('giScreen').classList.add('open');
+  }
+
+  // Closes the Digestion full screen
+  function closeScreen(){
+    document.getElementById('giScreen').classList.remove('open');
+  }
+
+  // Renders content into the digestion screen scroll body
+  function renderScreen(){
+    var el=document.getElementById('giScreenScroll');
+    if(!el)return;
+    var w=S.who,d=U.today();
+    var todayEntries=(S.gi[w]&&S.gi[w][d])||[];
+    var html='';
+    html+='<button class="bp-log-btn" onclick="GILog.openSheet()">+ Log Digestion</button>';
+    html+=_buildDayStripHtml(w,d);
+    html+=_buildTodayEntriesHtml(todayEntries,w,d);
+    html+=_buildRecentHistoryHtml(w,d);
+    el.innerHTML=html;
+  }
+
+  // Builds the 5-day strip HTML string
+  function _buildDayStripHtml(w,d){
+    var html='<div style="display:flex;gap:0;margin-top:16px;border-top:1px solid var(--bd);padding-top:12px;">';
+    for(var i=4;i>=0;i--){
+      var dt=new Date();dt.setDate(dt.getDate()-i);
+      var key=dt.getFullYear()+'-'+U.pad(dt.getMonth()+1)+'-'+U.pad(dt.getDate());
+      var lbl=i===0?'TODAY':i===1?'YEST':['SUN','MON','TUE','WED','THU','FRI','SAT'][dt.getDay()];
+      var dayEntries=(S.gi[w]&&S.gi[w][key])||[];
+      var isToday=(key===d);
+      html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;'+(isToday?'background:var(--accp);border-radius:10px;':'')+'padding:6px 2px;">';
+      html+='<div style="font-size:9px;font-weight:700;letter-spacing:.06em;color:'+(isToday?'var(--acc)':'var(--mt)')+';">'+lbl+'</div>';
+      html+='<div style="font-size:10px;color:var(--mt);">'+dt.getDate()+'</div>';
+      if(!dayEntries.length){
+        html+='<div style="width:20px;height:2px;background:var(--bd);border-radius:1px;margin-top:4px;"></div>';
+      } else {
+        dayEntries.slice(0,2).forEach(function(){html+='\ud83d\udca9';});
+        if(dayEntries.length>2)html+='<div style="font-size:9px;color:var(--mt);">+'+(dayEntries.length-2)+'</div>';
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+    return html;
+  }
+
+  // Builds today's entry list HTML string
+  function _buildTodayEntriesHtml(entries,w,d){
+    var CONS={smooth:'Smooth / Easy',normal:'Normal',firm:'Firm',loose:'Loose',watery:'Watery',constip:'Constipated'};
+    var COLS={brown:'#7B4F2E',yellow:'#D4A520',green:'#4A7C3F',pale:'#D4C9A8',black:'#2A2A2A',red:'#CC2200',greasy:'#C8B87A'};
+    if(!entries.length){
+      return '<div style="font-size:13px;color:var(--mt);margin-top:14px;">Nothing logged today.</div>';
+    }
+    var html='<div style="margin-top:14px;border-top:1px solid var(--bd);padding-top:12px;">';
+    entries.slice().reverse().forEach(function(e,ri){
+      var idx=entries.length-1-ri;
+      var consName=CONS[e.consistency]||e.consistency||'Logged';
+      var colDot=e.color&&COLS[e.color]?'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+COLS[e.color]+';margin-left:5px;vertical-align:middle;"></span>':'';
+      var t=new Date(e.ts);
+      var hh=t.getHours(),mm=t.getMinutes(),ap=hh>=12?'pm':'am';
+      var tstr=(hh%12||12)+':'+(mm<10?'0':'')+mm+ap;
+      var syms=(e.symptoms||[]).map(function(s){return s.id;}).join(', ');
+      html+='<div class="gi-log-entry">';
+      html+='<div class="gi-log-ico">\ud83d\udca9</div>';
+      html+='<div class="gi-log-info">';
+      html+='<div class="gi-log-name">'+U.esc(consName)+colDot+'</div>';
+      html+='<div class="gi-log-meta">'+tstr+(syms?' \u00b7 '+syms:'')+'</div>';
+      html+='</div>';
+      html+='<button style="background:none;border:none;color:var(--mt);font-size:15px;cursor:pointer;padding:4px;" onclick="GILog.delFromScreen('+idx+')">×</button>';
+      html+='</div>';
+    });
+    html+='</div>';
+    return html;
+  }
+
+  // Builds recent history (last 7 days excluding today) HTML string
+  function _buildRecentHistoryHtml(w,d){
+    var CONS={smooth:'Smooth / Easy',normal:'Normal',firm:'Firm',loose:'Loose',watery:'Watery',constip:'Constipated'};
+    var html='<div class="gi-screen-history-lbl" style="margin-top:18px;">Recent History</div>';
+    var hasAny=false;
+    for(var i=1;i<=7;i++){
+      var dt=new Date();dt.setDate(dt.getDate()-i);
+      var key=dt.getFullYear()+'-'+U.pad(dt.getMonth()+1)+'-'+U.pad(dt.getDate());
+      var dayEntries=(S.gi[w]&&S.gi[w][key])||[];
+      if(!dayEntries.length)continue;
+      hasAny=true;
+      var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()];
+      html+='<div style="font-size:11px;font-weight:600;color:var(--mt);margin-bottom:6px;">'+mo+' '+dt.getDate()+'</div>';
+      dayEntries.forEach(function(e){
+        var consName=CONS[e.consistency]||e.consistency||'Logged';
+        var t=new Date(e.ts);
+        var hh=t.getHours(),mm=t.getMinutes(),ap=hh>=12?'pm':'am';
+        var tstr=(hh%12||12)+':'+(mm<10?'0':'')+mm+ap;
+        html+='<div class="gi-log-entry" style="margin-bottom:6px;">';
+        html+='<div class="gi-log-ico">\ud83d\udca9</div>';
+        html+='<div class="gi-log-info"><div class="gi-log-name">'+U.esc(consName)+'</div>';
+        html+='<div class="gi-log-meta">'+tstr+'</div></div>';
+        html+='</div>';
+      });
+    }
+    if(!hasAny)html+='<div style="font-size:13px;color:var(--mt);">No entries in the last 7 days.</div>';
+    return html;
+  }
+
+  // Deletes an entry from the screen (today only) and re-renders
+  function delFromScreen(idx){
+    var w=S.who,d=U.today();
+    if(S.gi[w]&&S.gi[w][d])S.gi[w][d].splice(idx,1);
+    DB.sched();
+    if(typeof BodyScreen!=='undefined')BodyScreen.render();
+    requestAnimationFrame(function(){renderScreen();});
+  }
+
+  return{openSheet,closeSheet,openScreen,closeScreen,renderScreen,pickCons,pickColor,toggleSym,pickIntensity,toggleCtx,nextStep,backTo,save,del,delFromScreen};
 })();
 
 /* ══ BLOOD PRESSURE MODULE ══ */
@@ -6211,16 +6510,106 @@ var BPModule=(function(){
     if(diaEl)diaEl.value='';
     if(noteEl)noteEl.value='';
     render();
+    requestAnimationFrame(function(){renderScreen();});
     var t=document.getElementById('toast');
     if(t){t.textContent='Reading logged.';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
   }
 
   function del(idx){
     readings().splice(idx,1);
-    DB.sched();render();
+    DB.sched();render();requestAnimationFrame(function(){renderScreen();});
   }
 
-  return{render,log,del,sysKeyup,classify,avg3,readings};
+  // Opens the BP full screen
+  function openScreen(){
+    renderScreen();
+    document.getElementById('bpScreen').classList.add('open');
+  }
+
+  // Closes the BP full screen
+  function closeScreen(){
+    document.getElementById('bpScreen').classList.remove('open');
+  }
+
+  // Renders content into the BP screen scroll body
+  function renderScreen(){
+    var el=document.getElementById('bpScreenScroll');
+    if(!el)return;
+    var bpR=readings();
+    var avg=avg3();
+    var html='';
+
+    // Average summary card — only shown when readings exist
+    if(avg){
+      var ac=classify(avg.sys,avg.dia);
+      html+='<div class="bp-screen-avg">';
+      html+='<div class="bp-avg-row">';
+      html+='<div class="bp-avg-num">'+avg.sys+'/'+avg.dia+'</div>';
+      html+='<div class="bp-avg-unit">mmHg avg</div>';
+      html+='<span class="bp-avg-badge '+ac.cls+'">'+ac.label+'</span>';
+      html+='</div>';
+      html+='<div class="bp-avg-sub">Based on last '+avg.n+' reading'+(avg.n!==1?'s':'')+'</div>';
+      html+='</div>';
+    }
+
+    // Log form
+    html+=_buildFormHtml();
+
+    // History
+    html+=_buildHistoryHtml(bpR);
+
+    el.innerHTML=html;
+  }
+
+  // Builds the log form HTML string
+  function _buildFormHtml(){
+    var html='';
+    html+='<div class="bp-screen-form">';
+    html+='<div class="bp-inputs-row">';
+    html+='<div class="bp-input-wrap">';
+    html+='<input class="bp-input" id="bpSysIn" type="number" min="50" max="250" placeholder="120" inputmode="numeric" onkeyup="BPModule.sysKeyup(event)" oninput="BPModule.sysKeyup(event)">';
+    html+='<div class="bp-input-lbl">Systolic</div>';
+    html+='</div>';
+    html+='<div class="bp-slash">/</div>';
+    html+='<div class="bp-input-wrap">';
+    html+='<input class="bp-input" id="bpDiaIn" type="number" min="30" max="150" placeholder="80" inputmode="numeric">';
+    html+='<div class="bp-input-lbl">Diastolic</div>';
+    html+='</div>';
+    html+='</div>';
+    html+='<input class="bp-note-input" id="bpNoteIn" type="text" placeholder="Note (optional — e.g. morning, after exercise)" style="margin-top:10px;">';
+    html+='<button class="bp-log-btn" onclick="BPModule.log()" style="margin-top:10px;">Save Reading</button>';
+    html+='</div>';
+    return html;
+  }
+
+  // Builds the history list HTML string
+  function _buildHistoryHtml(bpR){
+    var html='';
+    html+='<div class="bp-history-lbl">History</div>';
+    if(!bpR.length){
+      html+='<div style="font-size:13px;color:var(--mt);">No readings yet.</div>';
+      return html;
+    }
+    bpR.slice().reverse().forEach(function(e,ri){
+      var idx=bpR.length-1-ri;
+      var c=classify(e.sys,e.dia);
+      html+='<div class="bp-reading">';
+      html+='<div class="bp-reading-nums">';
+      html+='<div class="bp-reading-main">'+e.sys+' / '+e.dia+'</div>';
+      html+='<div class="bp-reading-unit">mmHg</div>';
+      html+='</div>';
+      html+='<div class="bp-reading-meta">';
+      html+='<span class="bp-avg-badge '+c.cls+'">'+c.label+'</span>';
+      html+='<span class="bp-reading-time">'+formatTime(e.ts)+'</span>';
+      if(e.note)html+='<span class="bp-reading-note">'+U.esc(e.note)+'</span>';
+      html+='</div>';
+      html+='<button class="bp-reading-del" onclick="BPModule.del('+idx+')">×</button>';
+      html+='</div>';
+    });
+    return html;
+  }
+
+  return{render,renderScreen,openScreen,closeScreen,log,del,sysKeyup,classify,avg3,readings};
 })();
 
 /* ══ GLUCOSE MODULE ══ */
@@ -6327,7 +6716,7 @@ var GlucoseModule=(function(){
   function renderSheet(){
     var html='';
     html+='<div class="gluc-input-wrap">';
-    html+='<input class="gluc-number-input" id="glucValIn" type="number" min="1" max="999" placeholder="108" inputmode="numeric" autofocus>';
+    html+='<input class="gluc-number-input" id="glucValIn" type="number" min="1" max="999" placeholder="108" inputmode="numeric" >';
     html+='<div class="gluc-unit-lbl">mg/dL</div>';
     html+='</div>';
     html+='<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Context <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>';
@@ -6338,19 +6727,22 @@ var GlucoseModule=(function(){
     html+='</div>';
     html+='<button class="gluc-save-btn" onclick="GlucoseModule.save()">Save Reading</button>';
     document.getElementById('glucSheetBody').innerHTML=html;
-    // Focus input
-    setTimeout(function(){var el=document.getElementById('glucValIn');if(el)el.focus();},100);
+
   }
 
   function pickCtx(c){
     _ctx=(_ctx===c)?null:c;
-    // Only re-render the sheet if it's actually open — avoids off-screen DOM write causing scroll jump
     var sheet=document.getElementById('glucSheet');
     if(sheet&&sheet.classList.contains('open'))renderSheet();
+    var screen=document.getElementById('glucScreen');
+    if(screen&&screen.classList.contains('open'))renderScreen();
   }
 
   function save(){
-    var el=document.getElementById('glucValIn');
+    // Read from screen input if screen is open, else sheet input
+    var screen=document.getElementById('glucScreen');
+    var screenOpen=screen&&screen.classList.contains('open');
+    var el=document.getElementById(screenOpen?'glucScreenVal':'glucValIn');
     var val=el?parseInt(el.value):NaN;
     if(isNaN(val)||val<1||val>999){
       if(el){
@@ -6368,9 +6760,11 @@ var GlucoseModule=(function(){
       date:U.today(),
       who:S.who
     });
+    _ctx=null;
     DB.sched();
-    closeSheet();
+    if(!screenOpen)closeSheet();
     _renderBody();
+    requestAnimationFrame(function(){renderScreen();});
     var t=document.getElementById('toast');
     if(t){t.textContent='Logged. Watching for patterns…';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2600);}
   }
@@ -6379,304 +6773,223 @@ var GlucoseModule=(function(){
     readings().splice(idx,1);
     DB.sched();
     _renderBody();
-  }
-
-  function connectDevice(){
+    requestAnimationFrame(function(){renderScreen();});
+  }  function connectDevice(){
     var t=document.getElementById('toast');
     if(t){t.textContent='Device integration coming soon';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
   }
 
+  // Opens the Glucose full screen
+  function openScreen(){
+    renderScreen();
+    document.getElementById('glucScreen').classList.add('open');
+  }
+
+  // Closes the Glucose full screen
+  function closeScreen(){
+    document.getElementById('glucScreen').classList.remove('open');
+  }
+
+  // Renders content into the glucose screen scroll body
+  function renderScreen(){
+    var el=document.getElementById('glucScreenScroll');
+    if(!el)return;
+    var last=latest();
+    var trendMsg=trend();
+    var html='';
+
+    // Latest reading summary — only shown when readings exist
+    if(last){
+      html+='<div class="gluc-screen-latest">';
+      html+='<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Latest Reading</div>';
+      html+='<div class="gluc-main-row">';
+      html+='<div class="gluc-value">'+last.value+'</div>';
+      html+='<div class="gluc-unit">mg/dL</div>';
+      html+='</div>';
+      var ctx=last.context?'<span class="gluc-ctx-pill">'+last.context+'</span> · ':'';
+      html+='<div class="gluc-sub">'+ctx+timeAgo(last.ts)+'</div>';
+      if(trendMsg)html+='<div class="gluc-trend">'+trendMsg+'</div>';
+      html+='</div>';
+    }
+
+    // Log form
+    html+=_buildGlucFormHtml();
+
+    // History
+    html+=_buildGlucHistoryHtml();
+
+    el.innerHTML=html;
+  }
+
+  // Builds the glucose log form HTML string
+  function _buildGlucFormHtml(){
+    var html='';
+    html+='<div class="gluc-screen-form">';
+    html+='<div class="gluc-input-wrap" style="margin-bottom:12px;">';
+    html+='<input class="gluc-number-input" id="glucScreenVal" type="number" min="1" max="999" placeholder="108" inputmode="numeric">';
+    html+='<div class="gluc-unit-lbl">mg/dL</div>';
+    html+='</div>';
+    html+='<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;">Context <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>';
+    html+='<div class="gluc-ctx-chips">';
+    CONTEXTS.forEach(function(c){
+      html+='<button class="gluc-chip'+(_ctx===c?' on':'')+'" onclick="GlucoseModule.pickCtx(\''+c+'\')">'+c+'</button>';
+    });
+    html+='</div>';
+    html+='<button class="gluc-save-btn" onclick="GlucoseModule.save()">Save Reading</button>';
+    html+='</div>';
+    return html;
+  }
+
+  // Builds the glucose history list HTML string
+  function _buildGlucHistoryHtml(){
+    var glucR=readings();
+    var html='';
+    html+='<div class="gluc-history-section-lbl">History</div>';
+    if(!glucR.length){
+      html+='<div style="font-size:13px;color:var(--mt);">No readings yet.</div>';
+      return html;
+    }
+    glucR.slice().reverse().forEach(function(e,ri){
+      var idx=glucR.length-1-ri;
+      html+='<div class="gluc-history-item">';
+      html+='<div class="gluc-history-val">'+e.value+'<span style="font-size:11px;color:var(--mt);"> mg/dL</span></div>';
+      html+='<div class="gluc-history-info">';
+      html+='<div class="gluc-history-time">'+formatTime(e.ts)+'</div>';
+      if(e.context)html+='<div class="gluc-history-ctx">'+e.context+'</div>';
+      html+='</div>';
+      html+='<button class="gluc-history-del" onclick="GlucoseModule.del('+idx+')">×</button>';
+      html+='</div>';
+    });
+    return html;
+  }
+
   function getCtx(){return _ctx;}
-  return{renderCard,saveInline,openSheet,closeSheet,pickCtx,save,del,connectDevice,readings,getCtx};
+  return{renderCard,saveInline,openScreen,closeScreen,renderScreen,openSheet,closeSheet,pickCtx,save,del,connectDevice,readings,getCtx};
 })();
 
 /* ══ BODY SCREEN ══ */
 var BodyScreen=(function(){
 
-  var _bpHistOpen=false;
-  var _glucHistOpen=false;
+  // Track which metric detail sheet is open (null | 'fluids'|'digestion'|'bp'|'glucose')
+  var _openMetric=null;
 
-  function glanceGI(){
-    var w=S.who,d=U.today();
-    var arr=(S.gi[w]&&S.gi[w][d])||[];
-    return arr.length>0;
-  }
+  // ── Data helpers ──
 
-  function glanceFluid(){
+  // Returns today's total fluid oz for current user
+  function _getFluidOzToday(){
     var w=S.who,d=U.today();
     if(!S.hydration[w]||!S.hydration[w][d])return 0;
-    return S.hydration[w][d].reduce(function(s,e){return s+(e.oz||0);},0);
+    return S.hydration[w][d].reduce(function(sum,e){return sum+(e.oz||0);},0);
   }
 
-  function formatTime(ts){
+  // Returns today's digestion entries array for current user
+  function _getDigestionToday(){
+    var w=S.who,d=U.today();
+    return (S.gi[w]&&S.gi[w][d])||[];
+  }
+
+  // Formats a timestamp as "Jan 4  2:30pm"
+  function _formatTime(ts){
     var t=new Date(ts);
     var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][t.getMonth()];
     var hh=t.getHours(),mm=t.getMinutes(),ap=hh>=12?'pm':'am';
     return mo+' '+t.getDate()+'  '+(hh%12||12)+':'+(mm<10?'0':'')+mm+ap;
   }
 
-  function timeAgo(ts){
+  // Returns human-readable time since timestamp (e.g. "2h ago")
+  function _timeAgo(ts){
     var diff=Date.now()-ts;
     var m=Math.floor(diff/60000);
-    if(m<2)return'just now';
+    if(m<2)return 'just now';
     if(m<60)return m+'m ago';
     var h=Math.floor(m/60);
     if(h<24)return h+'h ago';
     return Math.floor(h/24)+'d ago';
   }
 
-  function render(){
-    var el=document.getElementById('bodyScreenRoot');
-    if(!el)return;
+  // ── Card subtitle builders ──
 
-    var bpR=BPModule.readings();
-    var lastBP=bpR.length?bpR[bpR.length-1]:null;
-    var glucR=GlucoseModule.readings();
-    var lastGluc=glucR.length?glucR[glucR.length-1]:null;
-    var fluidOz=glanceFluid();
-    var giLogged=glanceGI();
-    var bpAvg=BPModule.avg3();
+  // Returns dynamic subtitle string for Fluids card
+  function _buildFluidsSubtitle(oz){
+    if(!oz)return 'Nothing logged today';
+    var goal=S.hydration[S.who]&&S.hydration[S.who].goal?S.hydration[S.who].goal:64;
+    var pct=Math.round((oz/goal)*100);
+    return '<span style="font-family:Fraunces,serif;font-weight:300;">'+oz+'oz</span><br>'+pct+'% of goal';
+  }
 
+  // Returns dynamic subtitle string for Digestion card
+  function _buildDigestionSubtitle(entries){
+    if(!entries.length)return 'Nothing logged today';
+    var last=entries[entries.length-1];
+    var CONS={smooth:'Smooth / Easy',normal:'Normal',firm:'Firm',loose:'Loose',watery:'Watery',constip:'Constipated'};
+    var t=new Date(last.ts);
+    var hh=t.getHours(),mm=t.getMinutes(),ap=hh>=12?'pm':'am';
+    var tstr=(hh%12||12)+':'+(mm<10?'0':'')+mm+ap;
+    var consLabel=CONS[last.consistency]||'Logged';
+    return '<span style="font-family:Fraunces,serif;font-weight:300;">'+entries.length+'</span>'+' entr'+(entries.length===1?'y':'ies')+' \u00b7 '+consLabel+'<br>'+tstr;
+  }
+
+  // Returns dynamic subtitle string for BP card
+  function _buildBPSubtitle(readings){
+    if(!readings.length)return 'No readings yet';
+    var last=readings[readings.length-1];
+    var c=BPModule.classify(last.sys,last.dia);
+    return '<span style="font-family:Fraunces,serif;font-weight:300;">'+last.sys+'/'+last.dia+'</span>'+' \u00b7 '+c.label+'<br>'+_timeAgo(last.ts);
+  }
+
+  // Returns dynamic subtitle string for Glucose card
+  function _buildGlucoseSubtitle(readings){
+    if(!readings.length)return 'No readings yet';
+    var last=readings[readings.length-1];
+    var ctx=last.context?last.context+' \u00b7 ':'';
+    return '<span style="font-family:Fraunces,serif;font-weight:300;">'+last.value+'</span>'+' mg/dL \u00b7 '+ctx.replace(' \u00b7 ','')+'<br>'+_timeAgo(last.ts);
+  }
+
+  // ── HTML builders ──
+
+  // Per-metric accent colors — bg fill and border/icon color
+  var _TILE_ACCENTS={
+    fluids:    {bg:'rgba(47,127,133,0.15)',accent:'#2F7F85'},
+    digestion: {bg:'rgba(94,127,79,0.15)', accent:'#5E7F4F'},
+    bp:        {bg:'rgba(190,60,60,0.12)', accent:'#BE3C3C'},
+    glucose:   {bg:'rgba(180,120,40,0.15)',accent:'#B47828'}
+  };
+
+  // Builds a single 2x2 metric tile HTML string
+  function _buildMetricTile(ico,name,subtitle,metricKey){
+    var ac=_TILE_ACCENTS[metricKey]||{bg:'var(--accp)',accent:'var(--acc)'};
+    var hasData=subtitle!=='Nothing logged today'&&subtitle!=='No readings yet';
     var html='';
-
-    // ── Today at a Glance ──
-    html+='<div class="bp-section-lbl" style="margin-top:14px;">Today at a Glance</div>';
-    html+='<div class="body-glance">';
-
-    // Fluid tile
-    html+='<div class="body-glance-tile">';
-    html+='<div class="body-glance-ico">💧</div>';
-    html+='<div class="body-glance-val">'+(fluidOz>0?fluidOz+'oz':'—')+'</div>';
-    html+='<div class="body-glance-lbl">Fluids</div>';
+    html+='<div class="body-metric-tile" style="--tile-accent:'+ac.accent+';--tile-accent-bg:'+ac.bg+';" onclick="BodyScreen.openMetric(\''+metricKey+'\')">';
+    html+='<div class="body-metric-tile-ico-wrap"><div class="body-metric-tile-ico">'+ico+'</div></div>';
+    html+='<div class="body-metric-tile-name">'+name+'</div>';
+    html+='<div class="body-metric-tile-sub'+(hasData?' has-data':'')+'">'+subtitle+'</div>';
     html+='</div>';
-
-    // GI tile
-    html+='<div class="body-glance-tile">';
-    html+='<div class="body-glance-ico">'+(giLogged?'💩':'·')+'</div>';
-    html+='<div class="body-glance-val">'+(giLogged?'Logged':'—')+'</div>';
-    html+='<div class="body-glance-lbl">Digestion</div>';
-    html+='</div>';
-
-    // BP tile
-    html+='<div class="body-glance-tile">';
-    html+='<div class="body-glance-ico">💓</div>';
-    if(lastBP){
-      html+='<div class="body-glance-val">'+lastBP.sys+'/'+lastBP.dia+'</div>';
-    } else {
-      html+='<div class="body-glance-val glance-empty">—</div>';
-    }
-    html+='<div class="body-glance-lbl">BP</div>';
-    html+='</div>';
-
-    // Glucose tile
-    html+='<div class="body-glance-tile">';
-    html+='<div class="body-glance-ico">🩸</div>';
-    if(lastGluc){
-      html+='<div class="body-glance-val">'+lastGluc.value+'</div>';
-    } else {
-      html+='<div class="body-glance-val glance-empty">—</div>';
-    }
-    html+='<div class="body-glance-lbl">Glucose</div>';
-    html+='</div>';
-
-    html+='</div>'; // /body-glance
-
-    // ── Log a Reading card with tabs ──
-    html+='<div class="body-log-card">';
-    html+='<div class="body-metric-tabs">';
-    html+='<button class="body-metric-tab on" id="bsTabGI" onclick="BodyScreen.switchTab(\'gi\')">Digestion</button>';
-    html+='<button class="body-metric-tab" id="bsTabBP" onclick="BodyScreen.switchTab(\'bp\')">Blood Pressure</button>';
-    html+='<button class="body-metric-tab" id="bsTabGluc" onclick="BodyScreen.switchTab(\'gluc\')">Glucose</button>';
-    html+='</div>';
-
-    // GI pane — log button + 5-day recap
-    var giW=S.who,giD=U.today();
-    var giTodayArr=(S.gi[giW]&&S.gi[giW][giD])||[];
-    html+='<div class="body-metric-pane on" id="bsPaneGI">';
-    // Today summary
-    if(giTodayArr.length){
-      html+='<div style="font-size:13px;color:var(--tx);font-weight:500;margin-bottom:10px;">'+giTodayArr.length+' entr'+(giTodayArr.length===1?'y':'ies')+' today</div>';
-    } else {
-      html+='<div style="font-size:13px;color:var(--mt);margin-bottom:10px;">Nothing logged today.</div>';
-    }
-    html+='<button class="bp-log-btn" onclick="GILog.openSheet()">+ Log Digestion</button>';
-    // 5-day recap strip
-    var giDays=[];
-    for(var gi_i=4;gi_i>=0;gi_i--){
-      var gi_dt=new Date();gi_dt.setDate(gi_dt.getDate()-gi_i);
-      var gi_key=gi_dt.getFullYear()+'-'+U.pad(gi_dt.getMonth()+1)+'-'+U.pad(gi_dt.getDate());
-      var gi_lbl=gi_i===0?'TODAY':gi_i===1?'YEST':['SUN','MON','TUE','WED','THU','FRI','SAT'][gi_dt.getDay()];
-      giDays.push({key:gi_key,lbl:gi_lbl,date:gi_dt.getDate(),entries:(S.gi[giW]&&S.gi[giW][gi_key])||[]});
-    }
-    html+='<div style="display:flex;gap:0;margin-top:16px;border-top:1px solid var(--bd);padding-top:12px;">';
-    giDays.forEach(function(day){
-      var isToday=day.key===giD;
-      html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;'+(isToday?'background:var(--accp);border-radius:10px;padding:6px 2px;':'padding:6px 2px;')+'">';
-      html+='<div style="font-size:9px;font-weight:700;letter-spacing:.06em;color:'+(isToday?'var(--acc)':'var(--mt)')+';">'+day.lbl+'</div>';
-      html+='<div style="font-size:10px;color:var(--mt);">'+day.date+'</div>';
-      if(!day.entries.length){
-        html+='<div style="width:20px;height:2px;background:var(--bd);border-radius:1px;margin-top:4px;"></div>';
-      } else {
-        day.entries.slice(0,2).forEach(function(e){
-          html+='<span style="font-size:18px;">💩</span>';
-        });
-        if(day.entries.length>2)html+='<div style="font-size:9px;color:var(--mt);">+'+( day.entries.length-2)+'</div>';
-      }
-      html+='</div>';
-    });
-    html+='</div>';
-    // Today's GI entries list
-    if(giTodayArr.length){
-      html+='<div style="margin-top:14px;border-top:1px solid var(--bd);padding-top:12px;">';
-      giTodayArr.slice().reverse().forEach(function(e,ri){
-        var idx=giTodayArr.length-1-ri;
-        var CONSISTENCY_MAP={smooth:'Smooth / Easy',normal:'Normal',firm:'Firm',loose:'Loose',watery:'Watery',constip:'Constipated'};
-        var COLORS_MAP={brown:'#7B4F2E',yellow:'#D4A520',green:'#4A7C3F',pale:'#D4C9A8',black:'#2A2A2A',red:'#CC2200',greasy:'#C8B87A'};
-        var consName=CONSISTENCY_MAP[e.consistency]||e.consistency||'Logged';
-        var colDot=e.color&&COLORS_MAP[e.color]?'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+COLORS_MAP[e.color]+';margin-left:5px;vertical-align:middle;"></span>':'';
-        var t=new Date(e.ts);
-        var hh=t.getHours(),mm=t.getMinutes(),ap=hh>=12?'pm':'am';
-        var tstr=(hh%12||12)+':'+(mm<10?'0':'')+mm+ap;
-        html+='<div class="gi-log-entry">';
-        html+='<div class="gi-log-ico">💩</div>';
-        html+='<div class="gi-log-info">';
-        html+='<div class="gi-log-name">'+U.esc(consName)+colDot+'</div>';
-        var syms=(e.symptoms||[]).map(function(s){return s.id;}).join(', ');
-        html+='<div class="gi-log-meta">'+tstr+(syms?' · '+syms:'')+'</div>';
-        html+='</div>';
-        html+='<button style="background:none;border:none;color:var(--mt);font-size:15px;cursor:pointer;padding:4px;" onclick="GILog.del('+idx+')">×</button>';
-        html+='</div>';
-      });
-      html+='</div>';
-    }
-    html+='</div>'; // /bsPaneGI
-
-    // BP pane — form + history inside
-    html+='<div class="body-metric-pane" id="bsPaneBP">';
-    html+='<div class="bp-inputs-row">';
-    html+='<div class="bp-input-wrap">';
-    html+='<input class="bp-input" id="bpSysIn" type="number" min="50" max="250" placeholder="120" inputmode="numeric"';
-    html+=' onkeyup="BPModule.sysKeyup(event)" oninput="BPModule.sysKeyup(event)">';
-    html+='<div class="bp-input-lbl">Systolic</div>';
-    html+='</div>';
-    html+='<div class="bp-slash">/</div>';
-    html+='<div class="bp-input-wrap">';
-    html+='<input class="bp-input" id="bpDiaIn" type="number" min="30" max="150" placeholder="80" inputmode="numeric">';
-    html+='<div class="bp-input-lbl">Diastolic</div>';
-    html+='</div>';
-    html+='</div>';
-    html+='<input class="bp-note-input" id="bpNoteIn" type="text" placeholder="Note (optional — e.g. morning, after exercise)" style="margin-top:10px;">';
-    html+='<button class="bp-log-btn" onclick="BPModule.log()" style="margin-top:10px;">Save Reading</button>';
-    // BP history inside pane
-    html+='<div class="body-view-row" onclick="BodyScreen.toggleBPHist()" style="margin:12px -16px 0;border-top:1px solid var(--bd);padding:11px 16px;">';
-    html+='<div><div class="body-view-lbl">History</div>';
-    if(bpAvg){
-      var bac=BPModule.classify(bpAvg.sys,bpAvg.dia);
-      html+='<div class="body-view-sub">Avg '+bpAvg.sys+'/'+bpAvg.dia+' · <span class="bp-avg-badge '+bac.cls+'" style="font-size:10px;padding:1px 6px;">'+bac.label+'</span></div>';
-    } else {
-      html+='<div class="body-view-sub">'+bpR.length+' reading'+(bpR.length!==1?'s':'')+'</div>';
-    }
-    html+='</div>';
-    html+='<span class="body-view-chev'+(_bpHistOpen?' open':'')+'">›</span>';
-    html+='</div>';
-    html+='<div class="body-history-panel'+(_bpHistOpen?' open':'')+'" id="bpHistPanel" style="margin:0 -16px;">';
-    html+='<div class="body-history-inner">';
-    if(bpR.length){
-      bpR.slice().reverse().forEach(function(e,ri){
-        var idx=bpR.length-1-ri;
-        var c=BPModule.classify(e.sys,e.dia);
-        html+='<div class="bp-reading">';
-        html+='<div class="bp-reading-nums"><div class="bp-reading-main">'+e.sys+' / '+e.dia+'</div><div class="bp-reading-unit">mmHg</div></div>';
-        html+='<div class="bp-reading-meta"><span class="bp-avg-badge '+c.cls+'">'+c.label+'</span><span class="bp-reading-time">'+formatTime(e.ts)+'</span>';
-        if(e.note)html+='<span class="bp-reading-note">'+U.esc(e.note)+'</span>';
-        html+='</div>';
-        html+='<button class="bp-reading-del" onclick="BPModule.del('+idx+')">×</button>';
-        html+='</div>';
-      });
-    } else {
-      html+='<div style="font-size:13px;color:var(--mt);padding:4px 0;">No readings yet.</div>';
-    }
-    html+='</div></div>';
-    html+='</div>'; // /bsPaneBP
-
-    // Glucose pane — input + history inside
-    html+='<div class="body-metric-pane" id="bsPaneGluc">';
-    if(lastGluc){
-      html+='<div class="body-avg-row">';
-      html+='<div class="body-avg-num">'+lastGluc.value+'</div>';
-      html+='<div class="body-avg-unit">mg/dL · '+timeAgo(lastGluc.ts)+'</div>';
-      html+='</div>';
-    }
-    html+='<div class="gluc-input-wrap" style="margin-bottom:12px;">';
-    html+='<input class="gluc-number-input" id="glucInlineVal" type="number" min="1" max="999" placeholder="108" inputmode="numeric">';
-    html+='<div class="gluc-unit-lbl">mg/dL</div>';
-    html+='</div>';
-    html+='<div class="gluc-ctx-chips" style="margin-bottom:14px;">';
-    var CTXS=['Fasting','Post-meal','Before bed','Waking','Other'];
-    var _gctx=GlucoseModule.getCtx();
-    CTXS.forEach(function(c){
-      html+='<button class="gluc-chip'+(_gctx===c?' on':'')+'" onclick="BodyScreen.pickGlucCtx(\''+c+'\')">'+c+'</button>';
-    });
-    html+='</div>';
-    html+='<button class="bp-log-btn" onclick="GlucoseModule.saveInline()">Save Reading</button>';
-    // Glucose history inside pane
-    html+='<div class="body-view-row" onclick="BodyScreen.toggleGlucHist()" style="margin:12px -16px 0;border-top:1px solid var(--bd);padding:11px 16px;">';
-    html+='<div><div class="body-view-lbl">History</div>';
-    html+='<div class="body-view-sub">'+glucR.length+' reading'+(glucR.length!==1?'s':'')+'</div>';
-    html+='</div>';
-    html+='<span class="body-view-chev'+(_glucHistOpen?' open':'')+'">›</span>';
-    html+='</div>';
-    html+='<div class="body-history-panel'+(_glucHistOpen?' open':'')+'" id="glucHistPanel" style="margin:0 -16px;">';
-    html+='<div class="body-history-inner">';
-    if(glucR.length){
-      glucR.slice().reverse().forEach(function(e,ri){
-        var idx=glucR.length-1-ri;
-        html+='<div class="gluc-history-item">';
-        html+='<div class="gluc-history-val">'+e.value+'<span style="font-size:11px;color:var(--mt);"> mg/dL</span></div>';
-        html+='<div class="gluc-history-info"><div class="gluc-history-time">'+formatTime(e.ts)+'</div>';
-        if(e.context)html+='<div class="gluc-history-ctx">'+e.context+'</div>';
-        html+='</div>';
-        html+='<button class="gluc-history-del" onclick="GlucoseModule.del('+idx+')">×</button>';
-        html+='</div>';
-      });
-    } else {
-      html+='<div style="font-size:13px;color:var(--mt);padding:4px 0;">No readings yet.</div>';
-    }
-    html+='</div></div>';
-    html+='</div>'; // /bsPaneGluc
-
-    html+='</div>'; // /body-log-card
-
-    // ── Connect device stub ──
-    html+='<div class="gluc-connect-row" onclick="BodyScreen.connectStub()" style="margin-top:4px;">';
-    html+='<div class="gluc-connect-ico">🔗</div>';
-    html+='<div class="gluc-connect-text">Connect a device or health app</div>';
-    html+='<div class="gluc-connect-badge">Coming soon</div>';
-    html+='</div>';
-
-    // ── Biometrics card ──
+    return html;
+  }
+  // Builds the Biometrics card HTML string
+  function _buildBiometricsHtml(){
     var bio=S.biometrics[S.who]||{};
-    // Migrate legacy single weightLb to weightLog
-    if(bio.weightLb&&!bio.weightLog){bio.weightLog=[{lb:bio.weightLb,ts:bio.wtTs||Date.now()}];delete bio.weightLb;delete bio.wtTs;DB.sched();}
+    if(bio.weightLb&&!bio.weightLog){
+      bio.weightLog=[{lb:bio.weightLb,ts:bio.wtTs||Date.now()}];
+      delete bio.weightLb;delete bio.wtTs;DB.sched();
+    }
     var lastWt=bio.weightLog&&bio.weightLog.length?bio.weightLog[bio.weightLog.length-1]:null;
     var bioEditing=S.biometrics._editing===S.who;
+    var htVal=bio.heightIn?Math.floor(bio.heightIn/12)+'\''+( bio.heightIn%12)+'"':'—';
+    var wtVal=lastWt?lastWt.lb+' lb'+(lastWt.lb&&bio.heightIn?' \u00b7 BMI '+Math.round(703*lastWt.lb/(bio.heightIn*bio.heightIn)):''):'—';
+    var html='';
     html+='<div class="bp-section-lbl" style="margin-top:18px;">Biometrics</div>';
     html+='<div class="bio-card">';
-    // Height row
-    var htVal=bio.heightIn?Math.floor(bio.heightIn/12)+'\''+( bio.heightIn%12)+'\"':'—';
     html+='<div class="bio-row" onclick="BodyScreen.toggleBioEdit()">';
     html+='<div class="bio-ico">📏</div>';
     html+='<div class="bio-info"><div class="bio-label">Height</div><div class="bio-val">'+htVal+'</div></div>';
     html+='<svg viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="1.8" width="16" height="16"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/><path d="M15.5 3.5a2.121 2.121 0 013 3L12 13l-4 1 1-4 6.5-6.5z"/></svg>';
     html+='</div>';
-    // Weight row
-    var wtVal=lastWt?lastWt.lb+' lb'+(lastWt.lb&&bio.heightIn?' · BMI '+Math.round(703*lastWt.lb/(bio.heightIn*bio.heightIn)):''):'—';
     html+='<div class="bio-row" onclick="BodyScreen.toggleBioEdit()">';
-    html+='<div class="bio-ico">⚖️</div>';
-    html+='<div class="bio-info"><div class="bio-label">Weight</div><div class="bio-val">'+wtVal+'</div></div>';
+    html+='<div class="bio-ico">\u2696\ufe0f</div>';
     html+='<div class="bio-info"><div class="bio-label">Weight</div><div class="bio-val">'+wtVal+(lastWt&&bio.weightLog.length>1?' <span style="font-size:10px;opacity:.7;">('+bio.weightLog.length+' logged)</span>':'')+'</div></div>';
     html+='</div>';
-    // Edit form — shown when bioEditing
     if(bioEditing){
       html+='<div class="bio-edit-wrap">';
       html+='<div class="bio-edit-row">';
@@ -6686,102 +6999,249 @@ var BodyScreen=(function(){
       html+='<span class="bio-unit-lbl">in</span>';
       html+='</div>';
       html+='<div class="bio-edit-row">';
-      html+='<input class="bio-edit-inp" id="bioWtIn" type="number" min="50" max="500" placeholder="165" inputmode="numeric" value="'+(lastWt?lastWt.lb:'')+'">'
+      html+='<input class="bio-edit-inp" id="bioWtIn" type="number" min="50" max="500" placeholder="165" inputmode="numeric" value="'+(lastWt?lastWt.lb:'')+'">';
       html+='<span class="bio-unit-lbl">lb</span>';
       html+='</div>';
       html+='<button class="bio-save-btn" onclick="BodyScreen.saveBio()">Save</button>';
       html+='</div>';
     }
-    html+='</div>'; // /bio-card
+    html+='</div>';
+    return html;
+  }
 
-    // ── Protocol card ──
+  // Builds My Protocol section HTML string
+  function _buildProtocolHtml(){
     var suppList=(S.inventory.supp[S.who]||[]);
     var medList=(S.inventory.med[S.who]||[]);
+    var html='';
     html+='<div class="bp-section-lbl" style="margin-top:18px;">My Protocol</div>';
     html+='<div class="settings-row" style="margin-bottom:0;">';
     html+='<div class="settings-item" onclick="Inventory.open(\'supp\')" style="cursor:pointer;">';
-    html+='<span class="settings-item-ico">🌿</span>';
+    html+='<span class="settings-item-ico">\ud83c\udf3f</span>';
     html+='<div class="settings-item-info">';
     html+='<div class="settings-item-name">Supplements</div>';
-    html+='<div class="settings-item-sub" id="inv-supp-count">'+(suppList.length>0?suppList.length+' item'+(suppList.length!==1?'s':''):'Add your supplements')+'</div>';
+    html+='<div class="settings-item-sub">'+(suppList.length>0?suppList.length+' item'+(suppList.length!==1?'s':''):'Add your supplements')+'</div>';
     html+='</div>';
     html+='<svg class="settings-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     html+='</div>';
     html+='<div class="settings-item" onclick="Inventory.open(\'med\')" style="cursor:pointer;">';
-    html+='<span class="settings-item-ico">💊</span>';
+    html+='<span class="settings-item-ico">\ud83d\udc8a</span>';
     html+='<div class="settings-item-info">';
     html+='<div class="settings-item-name">Medications</div>';
-    html+='<div class="settings-item-sub" id="inv-med-count">'+(medList.length>0?medList.length+' item'+(medList.length!==1?'s':''):'Add your medications')+'</div>';
+    html+='<div class="settings-item-sub">'+(medList.length>0?medList.length+' item'+(medList.length!==1?'s':''):'Add your medications')+'</div>';
     html+='</div>';
     html+='<svg class="settings-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     html+='</div>';
     html+='</div>';
+    return html;
+  }
 
+  // ── Main render ──
+
+  // Renders the Body screen card grid
+  function render(){
+    var el=document.getElementById('bodyScreenRoot');
+    if(!el)return;
+    var bpReadings=BPModule.readings();
+    var glucReadings=GlucoseModule.readings();
+    var fluidOz=_getFluidOzToday();
+    var digestionEntries=_getDigestionToday();
+    var html='';
+    html+='<div class="body-metric-grid">';
+    html+=_buildMetricTile('\ud83d\udca7','Hydration',_buildFluidsSubtitle(fluidOz),'fluids');
+    html+=_buildMetricTile('\ud83d\udca9','Digestion',_buildDigestionSubtitle(digestionEntries),'digestion');
+    html+=_buildMetricTile('\ud83d\udc93','Blood Pressure',_buildBPSubtitle(bpReadings),'bp');
+    html+=_buildMetricTile('\ud83e\ude78','Glucose',_buildGlucoseSubtitle(glucReadings),'glucose');
+    html+='</div>';
     var scrollEl=document.getElementById('bodyScrollBody');
     var savedScroll=scrollEl?scrollEl.scrollTop:0;
-
     el.innerHTML=html;
-
-    // Restore scroll — synchronous attempt + rAF backstop
     if(scrollEl)scrollEl.scrollTop=savedScroll;
     requestAnimationFrame(function(){
       var el2=document.getElementById('bodyScrollBody');
       if(el2&&savedScroll>0)el2.scrollTop=savedScroll;
     });
-
-    // Re-apply active tab state (survives re-render)
-    var active=el.dataset.activeTab||'gi';
-    _applyTab(active);
   }
 
-  function _applyTab(tab){
-    var el=document.getElementById('bodyScreenRoot');
+  // ── Metric detail sheets ──
+
+  // Opens the appropriate screen or sheet for the tapped metric tile
+  function openMetric(type){
+    if(type==='fluids'){HydrationLog.openScreen();return;}
+    if(type==='digestion'){GILog.openScreen();return;}
+    if(type==='bp'){BPModule.openScreen();return;}
+    if(type==='glucose'){GlucoseModule.openScreen();return;}
+  }
+
+  // Closes whichever metric detail sheet is open
+  function closeMetric(){
+    var sheetMap={fluids:'metricSheetFluids',digestion:'metricSheetDigestion',bp:'metricSheetBP',glucose:'metricSheetGlucose'};
+    if(_openMetric&&sheetMap[_openMetric])document.getElementById(sheetMap[_openMetric]).classList.remove('open');
+    document.getElementById('metricSheetOv').classList.remove('open');
+    _openMetric=null;
+  }
+
+  // Renders content into the appropriate metric detail sheet body
+  function _renderMetricBody(type){
+    var bodyMap={fluids:'metricBodyFluids',digestion:'metricBodyDigestion',bp:'metricBodyBP',glucose:'metricBodyGlucose'};
+    var el=document.getElementById(bodyMap[type]);
     if(!el)return;
-    var tabs={gi:'#bsTabGI',bp:'#bsTabBP',gluc:'#bsTabGluc'};
-    var panes={gi:'#bsPaneGI',bp:'#bsPaneBP',gluc:'#bsPaneGluc'};
-    Object.keys(tabs).forEach(function(t){
-      var tb=el.querySelector(tabs[t]);
-      var pn=el.querySelector(panes[t]);
-      if(tb)tb.classList.toggle('on',t===tab);
-      if(pn)pn.classList.toggle('on',t===tab);
+    if(type==='fluids')el.innerHTML=_buildFluidsDetailHtml();
+    else if(type==='digestion')el.innerHTML=_buildDigestionDetailHtml();
+    else if(type==='bp')el.innerHTML=_buildBPDetailHtml();
+    else if(type==='glucose')el.innerHTML=_buildGlucoseDetailHtml();
+  }
+
+  // Fluids detail — links to full hydration screen
+  function _buildFluidsDetailHtml(){
+    var oz=_getFluidOzToday();
+    var html='';
+    if(oz){
+      var goal=S.hydration[S.who]&&S.hydration[S.who].goal?S.hydration[S.who].goal:64;
+      html+='<div class="body-avg-row"><div class="body-avg-num">'+oz+'</div><div class="body-avg-unit">oz today \u00b7 '+Math.round((oz/goal)*100)+'% of goal</div></div>';
+    } else {
+      html+='<div style="font-size:13px;color:var(--mt);margin-bottom:12px;">Nothing logged today.</div>';
+    }
+    html+='<button class="bp-log-btn" onclick="HydrationLog.openQuickAdd()">+ Log a Drink</button>';
+    html+='<button class="bp-log-btn" style="margin-top:8px;background:var(--bg2);color:var(--tx);border:1px solid var(--bd);" onclick="BodyScreen.closeMetric();HydrationLog.openScreen()">Open Full Fluids Screen</button>';
+    return html;
+  }
+
+  // Digestion detail — 5-day strip + today entries
+  function _buildDigestionDetailHtml(){
+    var w=S.who,d=U.today();
+    var entries=(S.gi[w]&&S.gi[w][d])||[];
+    var CONS={smooth:'Smooth / Easy',normal:'Normal',firm:'Firm',loose:'Loose',watery:'Watery',constip:'Constipated'};
+    var COLS={brown:'#7B4F2E',yellow:'#D4A520',green:'#4A7C3F',pale:'#D4C9A8',black:'#2A2A2A',red:'#CC2200',greasy:'#C8B87A'};
+    var html='';
+    html+='<button class="bp-log-btn" onclick="BodyScreen.closeMetric();GILog.openSheet()">+ Log Digestion</button>';
+    html+='<div style="display:flex;gap:0;margin-top:16px;border-top:1px solid var(--bd);padding-top:12px;">';
+    for(var i=4;i>=0;i--){
+      var dt=new Date();dt.setDate(dt.getDate()-i);
+      var key=dt.getFullYear()+'-'+U.pad(dt.getMonth()+1)+'-'+U.pad(dt.getDate());
+      var lbl=i===0?'TODAY':i===1?'YEST':['SUN','MON','TUE','WED','THU','FRI','SAT'][dt.getDay()];
+      var dayEntries=(S.gi[w]&&S.gi[w][key])||[];
+      var isToday=(key===d);
+      html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;'+(isToday?'background:var(--accp);border-radius:10px;':'')+'padding:6px 2px;">';
+      html+='<div style="font-size:9px;font-weight:700;letter-spacing:.06em;color:'+(isToday?'var(--acc)':'var(--mt)')+';">'+lbl+'</div>';
+      html+='<div style="font-size:10px;color:var(--mt);">'+dt.getDate()+'</div>';
+      if(!dayEntries.length){
+        html+='<div style="width:20px;height:2px;background:var(--bd);border-radius:1px;margin-top:4px;"></div>';
+      } else {
+        dayEntries.slice(0,2).forEach(function(){html+='\ud83d\udca9';});
+        if(dayEntries.length>2)html+='<div style="font-size:9px;color:var(--mt);">+'+(dayEntries.length-2)+'</div>';
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+    if(entries.length){
+      html+='<div style="margin-top:14px;border-top:1px solid var(--bd);padding-top:12px;">';
+      entries.slice().reverse().forEach(function(e,ri){
+        var idx=entries.length-1-ri;
+        var consName=CONS[e.consistency]||e.consistency||'Logged';
+        var colDot=e.color&&COLS[e.color]?'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+COLS[e.color]+';margin-left:5px;vertical-align:middle;"></span>':'';
+        var t=new Date(e.ts);
+        var hh=t.getHours(),mm=t.getMinutes(),ap=hh>=12?'pm':'am';
+        var tstr=(hh%12||12)+':'+(mm<10?'0':'')+mm+ap;
+        var syms=(e.symptoms||[]).map(function(s){return s.id;}).join(', ');
+        html+='<div class="gi-log-entry">';
+        html+='<div class="gi-log-ico">\ud83d\udca9</div>';
+        html+='<div class="gi-log-info">';
+        html+='<div class="gi-log-name">'+U.esc(consName)+colDot+'</div>';
+        html+='<div class="gi-log-meta">'+tstr+(syms?' \u00b7 '+syms:'')+'</div>';
+        html+='</div>';
+        html+='<button style="background:none;border:none;color:var(--mt);font-size:15px;cursor:pointer;padding:4px;" onclick="GILog.del('+idx+');BodyScreen._renderMetricBody(\'digestion\');BodyScreen.render();">\u00d7</button>';
+        html+='</div>';
+      });
+      html+='</div>';
+    } else {
+      html+='<div style="font-size:13px;color:var(--mt);margin-top:14px;">Nothing logged today.</div>';
+    }
+    return html;
+  }
+
+  // BP detail — input form + full history list
+  function _buildBPDetailHtml(){
+    var bpR=BPModule.readings();
+    var bpAvg=BPModule.avg3();
+    var html='';
+    html+='<div class="bp-inputs-row">';
+    html+='<div class="bp-input-wrap"><input class="bp-input" id="bpSysIn" type="number" min="50" max="250" placeholder="120" inputmode="numeric" onkeyup="BPModule.sysKeyup(event)" oninput="BPModule.sysKeyup(event)"><div class="bp-input-lbl">Systolic</div></div>';
+    html+='<div class="bp-slash">/</div>';
+    html+='<div class="bp-input-wrap"><input class="bp-input" id="bpDiaIn" type="number" min="30" max="150" placeholder="80" inputmode="numeric"><div class="bp-input-lbl">Diastolic</div></div>';
+    html+='</div>';
+    html+='<input class="bp-note-input" id="bpNoteIn" type="text" placeholder="Note (optional)" style="margin-top:10px;">';
+    html+='<button class="bp-log-btn" onclick="BPModule.log()" style="margin-top:10px;">Save Reading</button>';
+    html+='<div style="margin-top:16px;border-top:1px solid var(--bd);padding-top:12px;">';
+    html+='<div class="body-view-lbl">History';
+    if(bpAvg){
+      var bac=BPModule.classify(bpAvg.sys,bpAvg.dia);
+      html+=' <span style="font-size:11px;color:var(--mt);font-weight:400;">\u00b7 Avg '+bpAvg.sys+'/'+bpAvg.dia+'</span>';
+      html+=' <span class="bp-avg-badge '+bac.cls+'" style="font-size:10px;padding:1px 6px;">'+bac.label+'</span>';
+    }
+    html+='</div>';
+    if(bpR.length){
+      bpR.slice().reverse().forEach(function(e,ri){
+        var idx=bpR.length-1-ri;
+        var c=BPModule.classify(e.sys,e.dia);
+        html+='<div class="bp-reading">';
+        html+='<div class="bp-reading-nums"><div class="bp-reading-main">'+e.sys+' / '+e.dia+'</div><div class="bp-reading-unit">mmHg</div></div>';
+        html+='<div class="bp-reading-meta"><span class="bp-avg-badge '+c.cls+'">'+c.label+'</span><span class="bp-reading-time">'+_formatTime(e.ts)+'</span>';
+        if(e.note)html+='<span class="bp-reading-note">'+U.esc(e.note)+'</span>';
+        html+='</div>';
+        html+='<button class="bp-reading-del" onclick="BPModule.del('+idx+');BodyScreen._renderMetricBody(\'bp\');BodyScreen.render();">\u00d7</button>';
+        html+='</div>';
+      });
+    } else {
+      html+='<div style="font-size:13px;color:var(--mt);margin-top:8px;">No readings yet.</div>';
+    }
+    html+='</div>';
+    return html;
+  }
+
+  // Glucose detail — input + context chips + history list
+  function _buildGlucoseDetailHtml(){
+    var glucR=GlucoseModule.readings();
+    var lastGluc=glucR.length?glucR[glucR.length-1]:null;
+    var CTXS=['Fasting','Post-meal','Before bed','Waking','Other'];
+    var gctx=GlucoseModule.getCtx();
+    var html='';
+    if(lastGluc){
+      html+='<div class="body-avg-row"><div class="body-avg-num">'+lastGluc.value+'</div>';
+      html+='<div class="body-avg-unit">mg/dL \u00b7 '+_timeAgo(lastGluc.ts)+'</div></div>';
+    }
+    html+='<div class="gluc-input-wrap" style="margin-bottom:12px;">';
+    html+='<input class="gluc-number-input" id="glucInlineVal" type="number" min="1" max="999" placeholder="108" inputmode="numeric">';
+    html+='<div class="gluc-unit-lbl">mg/dL</div></div>';
+    html+='<div class="gluc-ctx-chips" style="margin-bottom:14px;">';
+    CTXS.forEach(function(c){
+      html+='<button class="gluc-chip'+(gctx===c?' on':'')+'" onclick="BodyScreen.pickGlucCtx(\''+c+'\')">'+c+'</button>';
     });
-    el.dataset.activeTab=tab;
+    html+='</div>';
+    html+='<button class="bp-log-btn" onclick="GlucoseModule.saveInline()">Save Reading</button>';
+    html+='<div style="margin-top:16px;border-top:1px solid var(--bd);padding-top:12px;">';
+    html+='<div class="body-view-lbl">History</div>';
+    if(glucR.length){
+      glucR.slice().reverse().forEach(function(e,ri){
+        var idx=glucR.length-1-ri;
+        html+='<div class="gluc-history-item">';
+        html+='<div class="gluc-history-val">'+e.value+'<span style="font-size:11px;color:var(--mt);"> mg/dL</span></div>';
+        html+='<div class="gluc-history-info"><div class="gluc-history-time">'+_formatTime(e.ts)+'</div>';
+        if(e.context)html+='<div class="gluc-history-ctx">'+e.context+'</div>';
+        html+='</div>';
+        html+='<button class="gluc-history-del" onclick="GlucoseModule.del('+idx+');BodyScreen._renderMetricBody(\'glucose\');BodyScreen.render();">\u00d7</button>';
+        html+='</div>';
+      });
+    } else {
+      html+='<div style="font-size:13px;color:var(--mt);margin-top:8px;">No readings yet.</div>';
+    }
+    html+='</div>';
+    return html;
   }
 
-  function switchTab(tab){
-    var el=document.getElementById('bodyScreenRoot');
-    if(el)el.dataset.activeTab=tab;
-    _applyTab(tab);
-  }
+  // ── Actions ──
 
-  function toggleBPHist(){
-    _bpHistOpen=!_bpHistOpen;
-    render();
-    var el=document.getElementById('bodyScreenRoot');
-    if(el)_applyTab(el.dataset.activeTab||'gi');
-  }
-
-  function toggleGlucHist(){
-    _glucHistOpen=!_glucHistOpen;
-    render();
-    var el=document.getElementById('bodyScreenRoot');
-    if(el)_applyTab(el.dataset.activeTab||'gi');
-  }
-
-  function pickGlucCtx(c){
-    // Toggle ctx on GlucoseModule without triggering a full render
-    var prev=GlucoseModule.getCtx();
-    GlucoseModule.pickCtx(c); // sets _ctx, calls renderSheet() which is harmless (sheet not open)
-    // Update chip classes in-place — no scroll jump
-    var pane=document.getElementById('bsPaneGluc');
-    if(!pane)return;
-    pane.querySelectorAll('.gluc-chip').forEach(function(btn){
-      var label=btn.textContent.trim();
-      var isSelected=GlucoseModule.getCtx()===label;
-      btn.classList.toggle('on',isSelected);
-    });
-  }
-
+  // Toggles biometrics edit form open/closed
   function toggleBioEdit(){
     if(!S.biometrics)S.biometrics={};
     S.biometrics._editing=(S.biometrics._editing===S.who)?null:S.who;
@@ -6791,6 +7251,7 @@ var BodyScreen=(function(){
     requestAnimationFrame(function(){var el=document.getElementById('bodyScrollBody');if(el)el.scrollTop=top;});
   }
 
+  // Saves biometrics form values and re-renders
   function saveBio(){
     var ft=parseInt(document.getElementById('bioFtIn').value)||0;
     var inn=parseInt(document.getElementById('bioInIn').value)||0;
@@ -6801,7 +7262,6 @@ var BodyScreen=(function(){
     if(wt>0){
       if(!S.biometrics[S.who].weightLog)S.biometrics[S.who].weightLog=[];
       S.biometrics[S.who].weightLog.push({lb:wt,ts:Date.now()});
-      // Keep last 365 entries max
       if(S.biometrics[S.who].weightLog.length>365)S.biometrics[S.who].weightLog.shift();
     }
     S.biometrics._editing=null;
@@ -6814,13 +7274,31 @@ var BodyScreen=(function(){
     if(t){t.textContent='Biometrics saved.';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
   }
 
+  // Updates glucose context chips in-place without a full re-render
+  function pickGlucCtx(c){
+    GlucoseModule.pickCtx(c);
+    var pane=document.getElementById('metricBodyGlucose');
+    if(!pane)return;
+    pane.querySelectorAll('.gluc-chip').forEach(function(btn){
+      btn.classList.toggle('on',GlucoseModule.getCtx()===btn.textContent.trim());
+    });
+  }
+
+  // Renders Biometrics + My Protocol into the Settings Profile section
+  function renderSettings(){
+    var el=document.getElementById('settingsBioRow');
+    if(!el)return;
+    el.innerHTML=_buildBiometricsHtml()+_buildProtocolHtml();
+  }
+
   function connectStub(){
     var t=document.getElementById('toast');
     if(t){t.textContent='Device integration coming soon';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
   }
 
-  return{render,switchTab,toggleBPHist,toggleGlucHist,connectStub,pickGlucCtx,toggleBioEdit,saveBio};
+  return{render,renderSettings,openMetric,closeMetric,_renderMetricBody,connectStub,pickGlucCtx,toggleBioEdit,saveBio};
 })();
+
 
 /* ══ CONFETTI ══ */
 var Confetti=(function(){
