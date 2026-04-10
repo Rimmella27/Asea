@@ -2791,7 +2791,7 @@ input,textarea{font-family:inherit}
     </button>
     <button class="fab-action" onclick="FAB.action('gi')">
       <div class="fab-action-bubble">💩</div>
-      <span class="fab-action-lbl">Log GI</span>
+      <span class="fab-action-lbl">Log Digestion</span>
     </button>
   </div>
 
@@ -3845,7 +3845,7 @@ var Insights=(function(){
       var items=[
         {ico:'🍽️',lbl:'Meal days',val:mealDays},
         {ico:'💧',lbl:'Fluid days',val:fluidDays},
-        {ico:'💩',lbl:'GI entries',val:giDays},
+        {ico:'💩',lbl:'Digestion entries',val:giDays},
         {ico:'💓',lbl:'BP readings',val:bpCount},
         {ico:'🩸',lbl:'Glucose readings',val:glucCount},
       ];
@@ -6454,7 +6454,7 @@ var BodyScreen=(function(){
     html+='<div class="body-glance-tile">';
     html+='<div class="body-glance-ico">'+(giLogged?'💩':'·')+'</div>';
     html+='<div class="body-glance-val">'+(giLogged?'Logged':'—')+'</div>';
-    html+='<div class="body-glance-lbl">GI</div>';
+    html+='<div class="body-glance-lbl">Digestion</div>';
     html+='</div>';
 
     // BP tile
@@ -6484,7 +6484,7 @@ var BodyScreen=(function(){
     // ── Log a Reading card with tabs ──
     html+='<div class="body-log-card">';
     html+='<div class="body-metric-tabs">';
-    html+='<button class="body-metric-tab on" id="bsTabGI" onclick="BodyScreen.switchTab(\'gi\')">GI</button>';
+    html+='<button class="body-metric-tab on" id="bsTabGI" onclick="BodyScreen.switchTab(\'gi\')">Digestion</button>';
     html+='<button class="body-metric-tab" id="bsTabBP" onclick="BodyScreen.switchTab(\'bp\')">Blood Pressure</button>';
     html+='<button class="body-metric-tab" id="bsTabGluc" onclick="BodyScreen.switchTab(\'gluc\')">Glucose</button>';
     html+='</div>';
@@ -6499,7 +6499,7 @@ var BodyScreen=(function(){
     } else {
       html+='<div style="font-size:13px;color:var(--mt);margin-bottom:10px;">Nothing logged today.</div>';
     }
-    html+='<button class="bp-log-btn" onclick="GILog.openSheet()">+ Log GI</button>';
+    html+='<button class="bp-log-btn" onclick="GILog.openSheet()">+ Log Digestion</button>';
     // 5-day recap strip
     var giDays=[];
     for(var gi_i=4;gi_i>=0;gi_i--){
@@ -6908,7 +6908,7 @@ var Onboarding=(function(){
   var MODULE_DEFS=[
     {id:'food',   ico:'🍽️', name:'Food Log',       sub:'Meals, snacks, supplements'},
     {id:'fluids', ico:'💧', name:'Fluids',          sub:'Water, coffee, all drinks'},
-    {id:'gi',     ico:'💩', name:'GI Tracker',      sub:'Bowel & symptom tracking'},
+    {id:'gi',     ico:'💩', name:'Digestion Tracker',  sub:'Bowel & symptom tracking'},
     {id:'bp',     ico:'💓', name:'Blood Pressure',  sub:'Log & track readings'},
     {id:'glucose',ico:'🩸', name:'Glucose',         sub:'Manual or device readings'},
     {id:'shop',   ico:'🛒', name:'Smart Shopping',  sub:'Grocery list for the family'},
@@ -7421,7 +7421,7 @@ var DataExport=(function(){
 
     html+='<div class="bp-section-lbl" style="padding-top:0;">What\'s included</div>';
     html+='<div style="background:var(--bg2);border-radius:12px;padding:14px 16px;margin-bottom:24px;">';
-    [[mealDates,'🍽️','days with meals logged'],[giDates,'💩','days with GI entries'],
+    [[mealDates,'🍽️','days with meals logged'],[giDates,'💩','days with Digestion entries'],
      [bpCount,'💓','BP readings'],[glucCount,'🩸','glucose readings']].forEach(function(item){
       html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
       html+='<span style="font-size:16px;">'+item[1]+'</span>';
@@ -7651,9 +7651,9 @@ var DataExport=(function(){
     }
 
     // GI + Hydration snapshot
-    lines.push('<h2>GI &amp; Hydration</h2>');
+    lines.push('<h2>Digestion &amp; Hydration</h2>');
     lines.push('<div class="grid2">');
-    lines.push('<div class="box"><div class="bv">'+d.giTotal+'</div><div class="bu">entries</div><div class="bl">GI logged ('+d.giDates.length+' days)</div></div>');
+    lines.push('<div class="box"><div class="bv">'+d.giTotal+'</div><div class="bu">entries</div><div class="bl">Digestion logged ('+d.giDates.length+' days)</div></div>');
     lines.push('<div class="box"><div class="bv">'+(d.fluidAvg?d.fluidAvg+'oz':'—')+'</div><div class="bu">daily avg</div><div class="bl">Hydration ('+d.fluidDays.length+' days)</div></div>');
     lines.push('</div>');
 
@@ -7710,10 +7710,10 @@ var DataExport=(function(){
 
     // ═══ PAGE 3: GI + MEALS ═══
     lines.push('<div class="page pb">');
-    lines.push('<h1 style="font-size:16px;color:#0a2640;margin-bottom:16px;">GI &amp; Diet Log &nbsp;<span style="font-size:12px;font-weight:400;color:#888;">'+e(d.dateRange)+'</span></h1>');
+    lines.push('<h1 style="font-size:16px;color:#0a2640;margin-bottom:16px;">Digestion &amp; Diet Log &nbsp;<span style="font-size:12px;font-weight:400;color:#888;">'+e(d.dateRange)+'</span></h1>');
 
     if(d.allGiEntries.length){
-      lines.push('<h2>GI Log</h2>');
+      lines.push('<h2>Digestion Log</h2>');
       lines.push('<table><thead><tr><th>Date</th><th>Consistency</th><th>Symptoms</th><th>Context</th></tr></thead><tbody>');
       d.allGiEntries.slice().reverse().forEach(function(g){
         var syms=(g.symptoms||[]).map(function(s){return e(s.id+(s.intensity?' ('+s.intensity+')':''));}).join(', ')||'—';
@@ -7722,7 +7722,7 @@ var DataExport=(function(){
       });
       lines.push('</tbody></table>');
     } else {
-      lines.push('<h2>GI Log</h2><p style="color:#aaa;font-size:12px;">No GI entries in this period.</p>');
+      lines.push('<h2>Digestion Log</h2><p style="color:#aaa;font-size:12px;">No Digestion entries in this period.</p>');
     }
 
     if(d.allMealItems.length){
