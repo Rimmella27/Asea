@@ -2664,6 +2664,99 @@ input, textarea { font-family: inherit; }
   line-height: 1.5;
 }
 
+/* ── Shared Trend Graph ── */
+.tg-wrap {
+  margin-top: 20px;
+  background: var(--sf);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+.tg-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 12px 14px 0;
+}
+.tg-toggle-btn {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--mt);
+  transition: background 0.15s, color 0.15s;
+}
+.tg-toggle-btn.active {
+  background: var(--acc);
+  color: #fff;
+}
+.tg-svg-wrap {
+  padding: 8px 14px 4px;
+  position: relative;
+}
+.tg-svg-wrap svg {
+  width: 100%;
+  display: block;
+  overflow: visible;
+}
+.tg-empty {
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--mt);
+  line-height: 1.5;
+}
+.tg-legend-row {
+  display: flex;
+  gap: 14px;
+  padding: 0 14px 12px;
+  align-items: center;
+}
+.tg-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--mt);
+  font-weight: 500;
+}
+.tg-legend-line {
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+/* Tooltip bubble */
+.tg-tooltip {
+  position: absolute;
+  background: var(--tx);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: 8px;
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  margin-top: -6px;
+  opacity: 0;
+  transition: opacity 0.12s;
+  z-index: 10;
+}
+.tg-tooltip.visible { opacity: 1; }
+.tg-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--tx);
+}
+
 .bp-hint {
   font-size: 12px; color: var(--mt); text-align: center;
   margin-top: 4px; min-height: 16px;
@@ -4109,6 +4202,10 @@ input, textarea { font-family: inherit; }
             <div class="you-edit-row">
               <input class="you-edit-input" id="you-input-weight" type="number" min="50" max="700" placeholder="lbs">
             </div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--mt);padding:10px 0 6px;">Goal Weight <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>
+            <div class="you-edit-row">
+              <input class="you-edit-input" id="you-input-goalWeight" type="number" min="50" max="700" placeholder="lbs">
+            </div>
             <div class="you-edit-actions">
               <button class="inv-cancel-btn" data-field-cancel="weight">Cancel</button>
               <button class="inv-save-btn"   data-field-save="weight">Save</button>
@@ -4320,10 +4417,10 @@ input, textarea { font-family: inherit; }
 
       <!-- Backup reminder banner (shown conditionally) -->
       <div id="backup-reminder-banner" style="display:none;margin:0 20px 16px;">
-        <div style="background:rgba(193,123,58,0.12);border:1px solid rgba(193,123,58,0.3);border-radius:var(--r-md);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="background:rgba(193,123,58,0.15);border:2.5px solid rgba(193,123,58,0.6);border-radius:var(--r-md);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
           <div>
-            <div style="font-size:13px;font-weight:600;color:#C17B3A;margin-bottom:2px;">Backup reminder</div>
-            <div style="font-size:12px;color:var(--mt);" id="backup-reminder-text">It's been a while since your last backup.</div>
+            <div style="font-size:14px;font-weight:700;color:#A8621E;margin-bottom:3px;">⚠️ Backup Reminder</div>
+            <div style="font-size:12px;color:var(--tx);line-height:1.45;" id="backup-reminder-text">It's been a while since your last backup.</div>
           </div>
           <button class="icon-btn" id="backup-reminder-dismiss" aria-label="Dismiss" style="flex-shrink:0;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -4781,6 +4878,8 @@ input, textarea { font-family: inherit; }
           <div style="font-size:13px;font-weight:600;color:#C62828;margin-bottom:4px;">⚠️ Elevated Reading</div>
           <div style="font-size:13px;color:#B71C1C;line-height:1.5;">A reading at this level is generally considered a reason to contact a medical professional promptly. This app does not provide medical advice — please reach out to your doctor or call emergency services if you feel unwell.</div>
         </div>
+        <!-- Trend graph — rendered by TrendGraph.render() via ScreenBP.render() -->
+        <div id="bp-trend-graph"></div>
         <div style="height:120px;"></div>
       </div><!-- /bp-scroll-body -->
     </div><!-- /screen-bp -->
@@ -4823,6 +4922,8 @@ input, textarea { font-family: inherit; }
         </div>
         <div class="gluc-hint" id="gluc-screen-hint"></div>
         <button class="log-entry-btn" id="gluc-log-entry-btn" disabled>Log Entry</button>
+        <!-- Trend graph — rendered by TrendGraph.render() via ScreenGlucose.render() -->
+        <div id="gluc-trend-graph"></div>
         <div style="height:120px;"></div>
       </div>
     </div><!-- /screen-glucose -->
@@ -4868,6 +4969,8 @@ input, textarea { font-family: inherit; }
         </div>
         <button class="log-entry-btn wt-save-btn" id="wt-save-btn">Log Entry</button>
         <div class="wt-hint" id="wt-screen-hint"></div>
+        <!-- Trend graph — rendered by TrendGraph.render() via ScreenWeight.render() -->
+        <div id="wt-trend-graph"></div>
         <div style="height:120px;"></div>
       </div>
     </div><!-- /screen-weight -->
@@ -6284,7 +6387,7 @@ var CONFIG = {
   appName:            'Asëa',
   appNameClean:       'Asea',
   tagline:            'Reveal the patterns your body already knows',
-  version:            'v21-05',
+  version:            'v22-08',
   storageKey:         'asea-v40',
   themeKey:           'asea-theme-v40',
   maxUsers:           1,
@@ -6887,7 +6990,7 @@ var State = (function() {
     theme: 'neutral',
     units: 'imperial',
     settings: {
-      backupInterval: 'monthly',
+      backupInterval: 'weekly',
       lastBackupTs: null,
       lastBackupFname: null,
       coffeeDefault: 'coffee',  // 'coffee' | 'coffee_milk' | 'coffee_sugar'
@@ -7398,6 +7501,8 @@ var Components = (function() {
 ══════════════════════════════════════════════════════════════ */
 var ScreenToday = (function() {
 
+  var _backupReminderShown = false; // session flag — show toast once per session only
+
   function render() {
     _renderDate();
     _renderHydration();
@@ -7406,6 +7511,11 @@ var ScreenToday = (function() {
     _renderTimeline();
     _renderInsightStrip();
     _renderNudge();
+    // Show backup reminder toast once per session, regardless of how Today was reached
+    if (!_backupReminderShown) {
+      _backupReminderShown = true;
+      setTimeout(function() { ScreenSettings.checkReminderOnOpen(); }, 1200);
+    }
   }
 
   function _renderDate() {
@@ -8982,7 +9092,7 @@ var ScreenYou = (function() {
     var s = State.get();
     var p = s.profile;
 
-    _setText('you-weight',  p.weight  ? p.weight + ' lbs' : '—');
+    _setText('you-weight',  p.weight  ? p.weight + ' lbs' + (p.goalWeight ? '  ·  Goal: ' + p.goalWeight + ' lbs' : '') : '—');
     _setText('you-height',  p.height  || '—');
     _setText('you-age',     p.age     ? p.age + ' yrs'   : '—');
     _setText('you-sex',     p.sex     ? _capitalize(p.sex) : '—');
@@ -9304,6 +9414,8 @@ var ScreenYou = (function() {
     if (field === 'weight') {
       var inp = document.getElementById('you-input-weight');
       if (inp) inp.value = s.profile.weight || '';
+      var gInp = document.getElementById('you-input-goalWeight');
+      if (gInp) gInp.value = s.profile.goalWeight || '';
     } else if (field === 'height') {
       var raw = s.profile.height || '';  // stored as e.g. "5' 11\"" or "5'11\""
       var match = raw.match(/(\d+)'\s*(\d*)/);
@@ -9356,6 +9468,9 @@ var ScreenYou = (function() {
       var val = Utils.parseNum(document.getElementById('you-input-weight').value, 50, 700);
       if (!val) return;
       State.update('profile.weight', val);
+      // Save goal weight — optional, clear if blank
+      var goalVal = Utils.parseNum(document.getElementById('you-input-goalWeight').value, 50, 700);
+      State.update('profile.goalWeight', goalVal || null);
 
     } else if (field === 'height') {
       var ft = parseInt(document.getElementById('you-input-height-ft').value, 10);
@@ -11480,6 +11595,321 @@ var FabDrinkSheet = (function() {
    SECTION 15c — SCREEN: BLOOD PRESSURE
    future: screens/bp.js
 ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   SECTION 15c-graph — SHARED TREND GRAPH ENGINE
+   future: components/trendGraph.js
+   Renders an SVG line graph inside a given container element.
+   Supports 1W / 1M / 3M / 6M view toggles, tappable tooltips,
+   and optional goal line (Weight screen).
+══════════════════════════════════════════════════════════════ */
+var TrendGraph = (function() {
+
+  // ── Constants ──────────────────────────────────────────────
+  var GRAPH_H    = 200;  // SVG inner height (px, viewBox units)
+  var PAD_TOP    =  14;
+  var PAD_BOTTOM =  20;
+  var PAD_LEFT   =  34;  // space for Y-axis labels
+  var PAD_RIGHT  =  10;
+  var PLOT_H     = GRAPH_H - PAD_TOP - PAD_BOTTOM;
+  var Y_LABEL_COUNT = 4; // number of Y axis guide lines
+
+  var WINDOWS = [
+    { key: '1W', label: '1W', days: 7  },
+    { key: '1M', label: '1M', days: 30 },
+    { key: '3M', label: '3M', days: 91 },
+    { key: '6M', label: '6M', days: 182 }
+  ];
+
+  // Active tooltip cleanup function (one at a time globally per graph)
+  var _tipCleanup = null;
+
+  // ── Public: render graph into a container element ───────────
+  // config = {
+  //   containerId : string   — wrapper div id
+  //   series      : [{ label, color, dash, points:[{ts,val}] }]
+  //   unit        : string   — e.g. 'mmHg', 'mg/dL', 'lbs'
+  //   goalVal     : number|null — optional goal line
+  //   goalLabel   : string   — e.g. 'Goal'
+  //   defaultWin  : string   — '1W'|'1M'|'3M'|'6M'
+  // }
+  function render(config) {
+    var el = document.getElementById(config.containerId);
+    if (!el) return;
+
+    var activeWin = config.defaultWin || '1W';
+
+    function _draw() {
+      el.innerHTML = _buildHTML(config, activeWin);
+      _bindToggle();
+      _bindTooltips();
+    }
+
+    function _bindToggle() {
+      el.querySelectorAll('.tg-toggle-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeWin = btn.dataset.win;
+          _draw();
+        });
+      });
+    }
+
+    function _bindTooltips() {
+      var svgWrap = el.querySelector('.tg-svg-wrap');
+      if (!svgWrap) return;
+      var tip = el.querySelector('.tg-tooltip');
+      if (!tip) return;
+
+      el.querySelectorAll('.tg-point').forEach(function(circle) {
+        circle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var label = circle.dataset.label;
+          var cx    = parseFloat(circle.getAttribute('cx'));
+          var cy    = parseFloat(circle.getAttribute('cy'));
+          // Convert SVG coords to container-relative px
+          var svg   = svgWrap.querySelector('svg');
+          var rect  = svg.getBoundingClientRect();
+          var vbW   = svg.viewBox.baseVal.width  || rect.width;
+          var vbH   = svg.viewBox.baseVal.height || rect.height;
+          var px    = (cx / vbW) * rect.width;
+          var py    = (cy / vbH) * rect.height;
+          tip.textContent = label;
+          tip.style.left  = px + 'px';
+          tip.style.top   = (py + 4) + 'px';
+          tip.classList.add('visible');
+          // Defer dismiss listener — must register AFTER current click event
+          // cycle completes, otherwise it fires immediately and dismisses the tip
+          setTimeout(function() {
+            function _dismiss() {
+              tip.classList.remove('visible');
+              document.removeEventListener('click', _dismiss);
+            }
+            document.addEventListener('click', _dismiss);
+          }, 0);
+        });
+      });
+    }
+
+    _draw();
+  }
+
+  // ── Build complete HTML string for one window ───────────────
+  function _buildHTML(config, winKey) {
+    var win = WINDOWS.filter(function(w) { return w.key === winKey; })[0] || WINDOWS[0];
+    var cutoff = Date.now() - win.days * 86400000;
+
+    // Filter each series to the window
+    var filtered = config.series.map(function(s) {
+      return {
+        label: s.label,
+        color: s.color,
+        dash:  s.dash || null,
+        points: (s.points || []).filter(function(p) { return p.ts >= cutoff; })
+                                .sort(function(a,b) { return a.ts - b.ts; })
+      };
+    });
+
+    // Collect all values across series for Y scale
+    var allVals = [];
+    filtered.forEach(function(s) {
+      s.points.forEach(function(p) { allVals.push(p.val); });
+    });
+    if (config.goalVal) allVals.push(config.goalVal);
+
+    // Toggle row
+    var toggleHTML = '<div class="tg-toggle-row">'
+      + WINDOWS.map(function(w) {
+          return '<button class="tg-toggle-btn' + (w.key === winKey ? ' active' : '')
+            + '" data-win="' + w.key + '">' + w.label + '</button>';
+        }).join('')
+      + '</div>';
+
+    // Empty state: need ≥2 data points to draw
+    var totalPts = filtered.reduce(function(sum, s) { return sum + s.points.length; }, 0);
+    if (totalPts < 2) {
+      var emptyMsg = totalPts === 0
+        ? 'No data in this period'
+        : 'Log one more reading to see your trend';
+      return '<div class="tg-wrap">' + toggleHTML
+        + '<div class="tg-empty">' + emptyMsg + '</div></div>';
+    }
+
+    // Y scale
+    var yMin = Math.min.apply(null, allVals);
+    var yMax = Math.max.apply(null, allVals);
+    // Add headroom so the line doesn't clip exactly at edges
+    var pad = Math.max((yMax - yMin) * 0.15, 4);
+    yMin = yMin - pad;
+    yMax = yMax + pad;
+    var yRange = yMax - yMin || 1;
+
+    // X scale: ts → x coordinate in SVG
+    var tsMin = filtered.reduce(function(m, s) {
+      if (!s.points.length) return m;
+      return Math.min(m, s.points[0].ts);
+    }, Infinity);
+    var tsMax = filtered.reduce(function(m, s) {
+      if (!s.points.length) return m;
+      return Math.max(m, s.points[s.points.length - 1].ts);
+    }, -Infinity);
+    var tsRange = tsMax - tsMin || 1;
+
+    // SVG viewBox width: use a logical unit (0 to 300 + pads)
+    var vbW = PAD_LEFT + 300 + PAD_RIGHT;
+    var vbH = GRAPH_H;
+
+    function tsToX(ts) {
+      return PAD_LEFT + ((ts - tsMin) / tsRange) * 300;
+    }
+    function valToY(val) {
+      return PAD_TOP + (1 - (val - yMin) / yRange) * PLOT_H;
+    }
+
+    // Y-axis guide lines + labels
+    var guideHTML = '';
+    for (var gi = 0; gi <= Y_LABEL_COUNT; gi++) {
+      var gVal  = yMin + (yRange / Y_LABEL_COUNT) * gi;
+      var gY    = valToY(gVal);
+      var gDisp = Math.round(gVal);
+      guideHTML += '<line x1="' + PAD_LEFT + '" y1="' + gY.toFixed(1)
+        + '" x2="' + (PAD_LEFT + 300) + '" y2="' + gY.toFixed(1)
+        + '" stroke="currentColor" stroke-width="0.5" opacity="0.12"/>';
+      guideHTML += '<text x="' + (PAD_LEFT - 4) + '" y="' + (gY + 3.5).toFixed(1)
+        + '" text-anchor="end" font-size="8" fill="currentColor" opacity="0.45">'
+        + gDisp + '</text>';
+    }
+
+    // X-axis date labels (up to 4 evenly spaced)
+    var xLabelHTML = '';
+    var xLabelData = _pickXLabels(filtered, win.days);
+    xLabelData.forEach(function(item) {
+      var lx = tsToX(item.ts);
+      xLabelHTML += '<text x="' + lx.toFixed(1) + '" y="' + (vbH - 4)
+        + '" text-anchor="middle" font-size="7.5" fill="currentColor" opacity="0.4">'
+        + item.label + '</text>';
+    });
+
+    // Goal line
+    var goalHTML = '';
+    if (config.goalVal && config.goalVal > 0) {
+      var gy = valToY(config.goalVal);
+      goalHTML = '<line x1="' + PAD_LEFT + '" y1="' + gy.toFixed(1)
+        + '" x2="' + (PAD_LEFT + 300) + '" y2="' + gy.toFixed(1)
+        + '" stroke="currentColor" opacity="0.35" stroke-width="1" stroke-dasharray="4 3"/>'
+        + '<text x="' + (PAD_LEFT + 4) + '" y="' + (gy - 3).toFixed(1)
+        + '" font-size="7.5" fill="currentColor" opacity="0.45">'
+        + (config.goalLabel || 'Goal') + '</text>';
+    }
+
+    // Series paths + points
+    var seriesHTML = '';
+    filtered.forEach(function(series) {
+      if (series.points.length < 2) return;
+      var opacityAttr = (series.opacity != null) ? ' opacity="' + series.opacity + '"' : '';
+      var pathD = series.points.map(function(p, i) {
+        var x = tsToX(p.ts).toFixed(1);
+        var y = valToY(p.val).toFixed(1);
+        return (i === 0 ? 'M' : 'L') + x + ',' + y;
+      }).join(' ');
+      var dashAttr = series.dash ? ' stroke-dasharray="' + series.dash + '"' : '';
+      seriesHTML += '<path d="' + pathD + '" fill="none" stroke="' + series.color
+        + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
+        + dashAttr + opacityAttr + '/>';
+
+      // Data point circles
+      series.points.forEach(function(p, i) {
+        var px = tsToX(p.ts).toFixed(1);
+        var py = valToY(p.val).toFixed(1);
+        var isLast = (i === series.points.length - 1);
+        var tipLabel = series.label
+          ? series.label + ': ' + p.val + (config.unit ? ' ' + config.unit : '')
+          : p.val + (config.unit ? ' ' + config.unit : '');
+        seriesHTML += '<circle class="tg-point" cx="' + px + '" cy="' + py
+          + '" r="' + (isLast ? 3.5 : 2.5) + '"'
+          + ' fill="' + series.color + '"'
+          + ' stroke="var(--sf)" stroke-width="1.5"'
+          + opacityAttr
+          + ' style="cursor:pointer;"'
+          + ' data-label="' + Utils.esc(tipLabel) + '"/>';
+      });
+    });
+
+    // Legend (only when >1 series)
+    var legendHTML = '';
+    if (filtered.length > 1) {
+      legendHTML = '<div class="tg-legend-row">'
+        + filtered.map(function(s) {
+            var swatchSVG = s.dash
+              ? '<svg width="24" height="8" viewBox="0 0 24 8" style="flex-shrink:0;display:block;">'
+                + '<line x1="0" y1="4" x2="24" y2="4" stroke="' + s.color + '" stroke-width="2"'
+                + ' stroke-dasharray="' + s.dash + '" opacity="' + (s.opacity != null ? s.opacity : 1) + '"/>'
+                + '</svg>'
+              : '<svg width="24" height="8" viewBox="0 0 24 8" style="flex-shrink:0;display:block;">'
+                + '<line x1="0" y1="4" x2="24" y2="4" stroke="' + s.color + '" stroke-width="2"'
+                + ' opacity="' + (s.opacity != null ? s.opacity : 1) + '"/>'
+                + '</svg>';
+            return '<div class="tg-legend-item">'
+              + swatchSVG
+              + '<span>' + s.label + '</span>'
+              + '</div>';
+          }).join('')
+        + '</div>';
+    }
+
+    var svgHTML = '<svg viewBox="0 0 ' + vbW + ' ' + vbH + '" xmlns="http://www.w3.org/2000/svg">'
+      + guideHTML + xLabelHTML + goalHTML + seriesHTML
+      + '</svg>';
+
+    return '<div class="tg-wrap">'
+      + toggleHTML
+      + '<div class="tg-svg-wrap">'
+      + svgHTML
+      + '<div class="tg-tooltip"></div>'
+      + '</div>'
+      + legendHTML
+      + '</div>';
+  }
+
+  // Pick evenly spaced X label timestamps from the data
+  function _pickXLabels(filtered, days) {
+    // Collect all unique day-buckets from all series
+    var seen = {};
+    var items = [];
+    filtered.forEach(function(s) {
+      s.points.forEach(function(p) {
+        var d = new Date(p.ts);
+        var key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+        if (!seen[key]) {
+          seen[key] = true;
+          items.push({ ts: p.ts, d: d });
+        }
+      });
+    });
+    items.sort(function(a,b) { return a.ts - b.ts; });
+    if (items.length <= 4) {
+      return items.map(function(item) { return { ts: item.ts, label: _fmtXLabel(item.d, days) }; });
+    }
+    // Pick first, last, and 2 evenly spaced interior points
+    var step = Math.floor((items.length - 1) / 3);
+    var picks = [0, step, step * 2, items.length - 1];
+    return picks.map(function(idx) {
+      return { ts: items[idx].ts, label: _fmtXLabel(items[idx].d, days) };
+    });
+  }
+
+  function _fmtXLabel(d, days) {
+    if (days <= 7) {
+      // Show day abbreviation: Mon, Tue etc.
+      return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+    }
+    // Show month/day: Jan 3
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[d.getMonth()] + ' ' + d.getDate();
+  }
+
+  return { render: render };
+
+})();
+
 var ScreenBP = (function() {
 
   var _bp_tod = null; // selected time-of-day: 'morning'|'afternoon'|'evening'
@@ -11513,6 +11943,30 @@ var ScreenBP = (function() {
         badge.style.display = 'none';
       }
     }
+
+    // Trend graph — build series from all BP logs
+    // SYS: solid accent colour. DIA: dashed, muted accent.
+    var bpLogs = (allLogs || []).slice().sort(function(a,b) { return a.ts - b.ts; });
+    TrendGraph.render({
+      containerId: 'bp-trend-graph',
+      unit:        'mmHg',
+      defaultWin:  '1W',
+      series: [
+        {
+          label:  'SYS',
+          color:  'var(--acc)',
+          dash:   null,
+          points: bpLogs.map(function(l) { return { ts: l.ts, val: l.sys }; })
+        },
+        {
+          label:  'DIA',
+          color:  'var(--acc)',
+          dash:   '4 3',
+          opacity: 0.6,
+          points: bpLogs.map(function(l) { return { ts: l.ts, val: l.dia }; })
+        }
+      ]
+    });
   }
 
   // Enable/disable Log Entry button based on field state
@@ -11811,6 +12265,22 @@ var ScreenGlucose = (function() {
         badge.style.display = 'none';
       }
     }
+
+    // Trend graph — single series, all glucose logs chronological
+    var glucLogs = (allLogs || []).slice().sort(function(a,b) { return a.ts - b.ts; });
+    TrendGraph.render({
+      containerId: 'gluc-trend-graph',
+      unit:        'mg/dL',
+      defaultWin:  '1W',
+      series: [
+        {
+          label:  null,  // single series — no legend needed
+          color:  'var(--acc)',
+          dash:   null,
+          points: glucLogs.map(function(l) { return { ts: l.ts, val: l.val }; })
+        }
+      ]
+    });
   }
 
   // Enable/disable Log Entry button
@@ -12101,6 +12571,24 @@ var ScreenWeight = (function() {
         badge.style.display = 'none';
       }
     }
+
+    // Trend graph — single series, optional goal line from profile.goalWeight
+    var wtLogs = (s.logs.weight || []).slice().sort(function(a,b) { return a.ts - b.ts; });
+    TrendGraph.render({
+      containerId: 'wt-trend-graph',
+      unit:        unit,
+      defaultWin:  '1W',
+      goalVal:     s.profile.goalWeight || null,
+      goalLabel:   'Goal',
+      series: [
+        {
+          label:  null,
+          color:  'var(--acc)',
+          dash:   null,
+          points: wtLogs.map(function(l) { return { ts: l.ts, val: l.val }; })
+        }
+      ]
+    });
   }
 
   function _openLogSheet() {
@@ -14725,8 +15213,6 @@ var App = (function() {
     } else {
       Router.go('today');
       ScreenToday.render();
-      // Check backup reminder on open
-      ScreenSettings.checkReminderOnOpen();
     }
   }
 
@@ -14965,9 +15451,9 @@ var App = (function() {
 var ScreenSettings = (function() {
 
   // Backup reminder intervals in days
-  var _intervals = { never: 0, weekly: 7, monthly: 30 };
-  var _intervalLabels = { never: 'Never', weekly: 'Weekly', monthly: 'Monthly' };
-  var _intervalOrder = ['never', 'weekly', 'monthly'];
+  var _intervals = { never: 0, daily: 1, weekly: 7, monthly: 30 };
+  var _intervalLabels = { never: 'Never', daily: 'Weekly', weekly: 'Weekly', monthly: 'Monthly' };
+  var _intervalOrder = ['daily', 'weekly', 'monthly', 'never'];
 
   function render() {
     var s = State.get();
@@ -14980,9 +15466,9 @@ var ScreenSettings = (function() {
     _renderLastBackup();
 
     // Backup interval
-    var interval = s.settings ? (s.settings.backupInterval || 'monthly') : 'monthly';
+    var interval = s.settings ? (s.settings.backupInterval || 'weekly') : 'weekly';
     var intEl = document.getElementById('backup-interval-label');
-    if (intEl) intEl.textContent = _intervalLabels[interval] || 'Monthly';
+    if (intEl) intEl.textContent = _intervalLabels[interval] || 'Weekly';
 
     // Units
     var unitsEl = document.getElementById('units-label');
@@ -15018,17 +15504,23 @@ var ScreenSettings = (function() {
   function _checkBackupReminder(s) {
     var banner = document.getElementById('backup-reminder-banner');
     if (!banner) return;
-    var interval = s.settings && s.settings.backupInterval || 'monthly';
+    var interval = s.settings && s.settings.backupInterval || 'weekly';
     var days = _intervals[interval];
-    if (days === 0) { banner.style.display = 'none'; return; }
     var lastTs = s.settings && s.settings.lastBackupTs;
-    var daysSince = lastTs ? Math.floor((Date.now() - lastTs) / CONFIG.DAY) : 999;
-    if (daysSince >= days) {
+    // Always show if never backed up (regardless of interval setting)
+    if (!lastTs) {
       banner.style.display = 'block';
       var txt = document.getElementById('backup-reminder-text');
-      if (txt) txt.textContent = lastTs
-        ? 'Last backup was ' + daysSince + ' days ago.'
-        : 'You haven\'t backed up yet.';
+      if (txt) txt.textContent = 'Back up your data so you don\'t lose it if you clear your browser cache.';
+      return;
+    }
+    // Interval = never: hide after first backup
+    if (days === 0) { banner.style.display = 'none'; return; }
+    var daysSince = Math.floor((Date.now() - lastTs) / CONFIG.DAY);
+    if (daysSince >= days) {
+      banner.style.display = 'block';
+      var txt2 = document.getElementById('backup-reminder-text');
+      if (txt2) txt2.textContent = 'Last backup was ' + daysSince + (daysSince === 1 ? ' day' : ' days') + ' ago.';
     } else {
       banner.style.display = 'none';
     }
@@ -15037,11 +15529,21 @@ var ScreenSettings = (function() {
   // Also check on app open (Today screen)
   function checkReminderOnOpen() {
     var s = State.get();
-    var interval = s.settings && s.settings.backupInterval || 'monthly';
-    var days = _intervals[interval];
-    if (days === 0) return;
     var lastTs = s.settings && s.settings.lastBackupTs;
-    var daysSince = lastTs ? Math.floor((Date.now() - lastTs) / CONFIG.DAY) : 999;
+    var interval = s.settings && s.settings.backupInterval || 'weekly';
+    var days = _intervals[interval];
+    // Always nudge if never backed up
+    if (!lastTs) {
+      Components.toast(
+        'Back up your data to avoid losing it',
+        null,
+        function() { Router.go('settings'); },
+        'Open'
+      );
+      return;
+    }
+    if (days === 0) return;
+    var daysSince = Math.floor((Date.now() - lastTs) / CONFIG.DAY);
     if (daysSince >= days) {
       Components.toast(
         'Time to back up your data',
@@ -15165,7 +15667,7 @@ var ScreenSettings = (function() {
     var intervalRow = document.getElementById('backup-interval-row');
     if (intervalRow) intervalRow.addEventListener('click', function() {
       var s = State.get();
-      var current = s.settings && s.settings.backupInterval || 'monthly';
+      var current = s.settings && s.settings.backupInterval || 'weekly';
       var idx = _intervalOrder.indexOf(current);
       var next = _intervalOrder[(idx + 1) % _intervalOrder.length];
       _ensureSettings();
