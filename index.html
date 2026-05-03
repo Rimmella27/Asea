@@ -3468,10 +3468,10 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
   padding: 12px 14px 0;
 }
 .tg-toggle-btn {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  padding: 4px 10px;
+  letter-spacing: 0.04em;
+  padding: 5px 12px;
   border-radius: 20px;
   border: none;
   cursor: pointer;
@@ -3509,9 +3509,33 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--mt);
   font-weight: 500;
+}
+/* Direction indicator above graph */
+.tg-direction {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 10px 14px 0;
+}
+.tg-dir-arrow {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+.tg-dir-arrow.up   { color: #c0392b; }
+.tg-dir-arrow.down { color: #27ae60; }
+.tg-dir-arrow.flat { color: var(--mt); }
+.tg-dir-delta {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tx);
+}
+.tg-dir-label {
+  font-size: 12px;
+  color: var(--mt);
 }
 .tg-legend-line {
   width: 16px;
@@ -7741,7 +7765,7 @@ var CONFIG = {
   appName:            'Asëa',
   appNameClean:       'Asea',
   tagline:            'Reveal the patterns your body already knows',
-  version:            'v25-17',
+  version:            'v25-21',
   storageKey:         'asea-v40',
   themeKey:           'asea-theme-v40',
   maxUsers:           1,
@@ -14996,15 +15020,10 @@ var TrendGraph = (function() {
     yMax = yMax + pad;
     var yRange = yMax - yMin || 1;
 
-    // X scale: ts → x coordinate in SVG
-    var tsMin = filtered.reduce(function(m, s) {
-      if (!s.points.length) return m;
-      return Math.min(m, s.points[0].ts);
-    }, Infinity);
-    var tsMax = filtered.reduce(function(m, s) {
-      if (!s.points.length) return m;
-      return Math.max(m, s.points[s.points.length - 1].ts);
-    }, -Infinity);
+    // X scale: always span the full selected window so data points
+    // are positioned correctly within the time frame, not stretched to fill it
+    var tsMin = cutoff;
+    var tsMax = Date.now();
     var tsRange = tsMax - tsMin || 1;
 
     // SVG viewBox width: use a logical unit (0 to 300 + pads)
@@ -15028,7 +15047,7 @@ var TrendGraph = (function() {
         + '" x2="' + (PAD_LEFT + 300) + '" y2="' + gY.toFixed(1)
         + '" stroke="currentColor" stroke-width="0.5" opacity="0.12"/>';
       guideHTML += '<text x="' + (PAD_LEFT - 4) + '" y="' + (gY + 3.5).toFixed(1)
-        + '" text-anchor="end" font-size="8" fill="currentColor" opacity="0.45">'
+        + '" text-anchor="end" font-size="9.5" fill="currentColor" opacity="0.5">'
         + gDisp + '</text>';
     }
 
@@ -15038,7 +15057,7 @@ var TrendGraph = (function() {
     xLabelData.forEach(function(item) {
       var lx = tsToX(item.ts);
       xLabelHTML += '<text x="' + lx.toFixed(1) + '" y="' + (vbH - 4)
-        + '" text-anchor="middle" font-size="7.5" fill="currentColor" opacity="0.4">'
+        + '" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.5">'
         + item.label + '</text>';
     });
 
@@ -15078,7 +15097,7 @@ var TrendGraph = (function() {
           ? series.label + ': ' + p.val + (config.unit ? ' ' + config.unit : '')
           : p.val + (config.unit ? ' ' + config.unit : '');
         seriesHTML += '<circle class="tg-point" cx="' + px + '" cy="' + py
-          + '" r="' + (isLast ? 3.5 : 2.5) + '"'
+          + '" r="' + (isLast ? 5 : 3.5) + '"'
           + ' fill="' + series.color + '"'
           + ' stroke="var(--sf)" stroke-width="1.5"'
           + opacityAttr
@@ -15109,12 +15128,57 @@ var TrendGraph = (function() {
         + '</div>';
     }
 
+    // Direction indicator: compare first vs last point across all series
+    var dirHTML = '';
+    var allPts = [];
+    filtered.forEach(function(s) { s.points.forEach(function(p) { allPts.push(p); }); });
+    allPts.sort(function(a,b) { return a.ts - b.ts; });
+    if (allPts.length >= 2) {
+      var first = allPts[0].val;
+      var last  = allPts[allPts.length - 1].val;
+      var delta = last - first;
+      var absDelta = Math.abs(delta).toFixed(1);
+      // Show actual date range of data, not the selected window label
+      var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var dFirst = new Date(allPts[0].ts);
+      var dLast  = new Date(allPts[allPts.length - 1].ts);
+      var rangeLabel;
+      if (dFirst.toDateString() === dLast.toDateString()) {
+        // Single day
+        rangeLabel = MONTHS[dFirst.getMonth()] + ' ' + dFirst.getDate();
+      } else if (dFirst.getMonth() === dLast.getMonth()) {
+        // Same month: "May 1 – 3"
+        rangeLabel = MONTHS[dFirst.getMonth()] + ' ' + dFirst.getDate() + ' – ' + dLast.getDate();
+      } else {
+        // Different months: "Apr 28 – May 3"
+        rangeLabel = MONTHS[dFirst.getMonth()] + ' ' + dFirst.getDate()
+          + ' – ' + MONTHS[dLast.getMonth()] + ' ' + dLast.getDate();
+      }
+      // For weight, down is good; for BP/glucose we just show direction neutrally
+      // Arrow direction always reflects actual change direction
+      var arrowCls, arrowChar;
+      if (Math.abs(delta) < 0.5) {
+        arrowCls = 'flat'; arrowChar = '→';
+      } else if (delta < 0) {
+        arrowCls = 'down'; arrowChar = '↓';
+      } else {
+        arrowCls = 'up'; arrowChar = '↑';
+      }
+      var deltaStr = (delta >= 0 ? '+' : '−') + absDelta + (config.unit ? ' ' + config.unit : '');
+      dirHTML = '<div class="tg-direction">'
+        + '<span class="tg-dir-arrow ' + arrowCls + '">' + arrowChar + '</span>'
+        + '<span class="tg-dir-delta">' + deltaStr + '</span>'
+        + '<span class="tg-dir-label">' + rangeLabel + '</span>'
+        + '</div>';
+    }
+
     var svgHTML = '<svg viewBox="0 0 ' + vbW + ' ' + vbH + '" xmlns="http://www.w3.org/2000/svg">'
       + guideHTML + xLabelHTML + goalHTML + seriesHTML
       + '</svg>';
 
     return '<div class="tg-wrap">'
       + toggleHTML
+      + dirHTML
       + '<div class="tg-svg-wrap">'
       + svgHTML
       + '<div class="tg-tooltip"></div>'
@@ -15125,29 +15189,17 @@ var TrendGraph = (function() {
 
   // Pick evenly spaced X label timestamps from the data
   function _pickXLabels(filtered, days) {
-    // Collect all unique day-buckets from all series
-    var seen = {};
-    var items = [];
-    filtered.forEach(function(s) {
-      s.points.forEach(function(p) {
-        var d = new Date(p.ts);
-        var key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
-        if (!seen[key]) {
-          seen[key] = true;
-          items.push({ ts: p.ts, d: d });
-        }
-      });
-    });
-    items.sort(function(a,b) { return a.ts - b.ts; });
-    if (items.length <= 4) {
-      return items.map(function(item) { return { ts: item.ts, label: _fmtXLabel(item.d, days) }; });
+    // Generate 4 evenly-spaced labels spanning the full selected window,
+    // independent of where actual data points fall
+    var now    = Date.now();
+    var cutoff = now - days * 86400000;
+    var count  = 4;
+    var labels = [];
+    for (var i = 0; i < count; i++) {
+      var ts = cutoff + (i / (count - 1)) * (now - cutoff);
+      labels.push({ ts: ts, label: _fmtXLabel(new Date(ts), days) });
     }
-    // Pick first, last, and 2 evenly spaced interior points
-    var step = Math.floor((items.length - 1) / 3);
-    var picks = [0, step, step * 2, items.length - 1];
-    return picks.map(function(idx) {
-      return { ts: items[idx].ts, label: _fmtXLabel(items[idx].d, days) };
-    });
+    return labels;
   }
 
   function _fmtXLabel(d, days) {
