@@ -5527,7 +5527,7 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
         <div class="you-section-title">About</div>
         <div style="background:var(--sf);border-radius:var(--r-lg);border:1px solid var(--bd);overflow:hidden;">
           <div style="padding:20px 18px 18px;">
-            <div style="font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--hdr);letter-spacing:-0.01em;line-height:1.1;">Asëa</div>
+            <div id="about-asea-title" style="font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--hdr);letter-spacing:-0.01em;line-height:1.1;user-select:none;-webkit-user-select:none;">Asëa</div>
             <div style="font-size:13px;color:var(--mt);letter-spacing:0.06em;margin-top:2px;margin-bottom:16px;">ah-SAY-ah</div>
             <div style="font-size:13px;color:var(--tx);line-height:1.65;margin-bottom:12px;">Asëa is a personal health intelligence system for you and your family. It tracks what you eat, drink, and feel — then quietly watches for the patterns your body already knows.</div>
             <div style="font-size:13px;color:var(--tx);line-height:1.65;margin-bottom:20px;">Log disappears into the background. When there's something worth saying, Asëa surfaces it.</div>
@@ -7609,7 +7609,7 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
 </div>
 
 <!-- Reset App sheet -->
-<div class="sheet" id="sheet-reset" role="dialog" aria-modal="true" aria-label="Reset app">
+<div class="sheet" id="sheet-reset" role="dialog" aria-modal="true" aria-label="Reset app" style="padding-bottom:0;">
   <div class="sheet-handle"></div>
   <div class="sheet-title-row">
     <div class="sheet-title" id="reset-sheet-title">Reset App</div>
@@ -7666,6 +7666,75 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
       <button class="btn-destructive-solid" id="reset-final-btn" disabled>Delete Everything</button>
       <div style="height:12px;"></div>
       <button class="btn-ghost" id="reset-back-btn">Go back</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Dev Test Harness sheet — hidden tool, desktop only -->
+<div class="sheet" id="sheet-dev-harness" role="dialog" aria-modal="true" aria-label="Developer test harness" style="padding-bottom:0;">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title-row">
+    <div class="sheet-title">🧪 Dev Test Harness</div>
+    <button class="icon-btn" id="dev-close-btn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div style="padding:0 20px 32px;">
+
+    <!-- Panel 1: Backup first -->
+    <div class="reset-panel active" id="dev-panel-1">
+      <div class="reset-step-title">Back up your data first</div>
+      <div class="reset-step-sub">Test data will erase everything. Save a backup now so you can restore your real data after testing.</div>
+
+      <!-- Default state -->
+      <div id="dev-backup-default">
+        <button class="btn-primary" id="dev-backup-now-btn" style="margin-bottom:10px;">Back Up Now</button>
+        <div style="font-size:12px;color:var(--acc);font-weight:500;text-align:center;margin-bottom:14px;">Saves to your device's Downloads folder automatically</div>
+        <button class="btn-ghost" id="dev-skip-backup-btn">Skip — I'm on desktop, I know what I'm doing</button>
+      </div>
+
+      <!-- Success state -->
+      <div id="dev-backup-success" style="display:none;">
+        <div style="background:var(--acc);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;">
+          <div style="font-size:22px;line-height:1;">&#x2713;</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:3px;">Backup saved</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.85);" id="dev-backup-fname-label">Your file is in your Downloads folder.</div>
+          </div>
+        </div>
+        <button class="btn-primary" id="dev-continue-btn" style="margin-bottom:12px;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Panel 2: Scenario list -->
+    <div class="reset-panel" id="dev-panel-2">
+      <div style="font-size:13px;color:var(--mt);margin-bottom:16px;line-height:1.5;">Select a scenario to load. <strong style="color:#b42828;">This will wipe all your tracked data.</strong></div>
+      <div id="dev-scenario-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <!-- Panel 3: Confirm -->
+    <div class="reset-panel" id="dev-panel-3">
+      <div class="reset-step-title" id="dev-confirm-title">Load test data?</div>
+      <div class="reset-warning-box">
+        <strong id="dev-confirm-scenario"></strong><br><br>
+        This will permanently erase all your tracked health data and replace it with test data.<br>
+        <div style="margin-top:10px;text-align:center;font-weight:700;letter-spacing:0.06em;color:#b42828;">THIS CANNOT BE UNDONE.</div>
+      </div>
+      <button class="btn-primary" id="dev-confirm-proceed-btn" style="margin-bottom:12px;">Continue →</button>
+      <button class="btn-ghost" id="dev-confirm-cancel-btn">Cancel</button>
+    </div>
+
+    <!-- Panel 4: Type LOAD to confirm -->
+    <div class="reset-panel" id="dev-panel-4">
+      <div id="dev-panel-4-handle" style="width:36px;height:4px;border-radius:2px;background:#b42828;opacity:0.5;margin:-4px auto 20px;"></div>
+      <div class="reset-step-title">Type LOAD to confirm</div>
+      <div class="reset-step-sub">Last chance. Type LOAD in capitals to replace all data with the test scenario.</div>
+      <input class="reset-confirm-input" id="dev-type-input" type="text" placeholder="LOAD" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+      <div style="height:16px;"></div>
+      <button class="btn-destructive-solid" id="dev-load-btn" disabled>Load Test Data</button>
+      <div style="height:12px;"></div>
+      <button class="btn-ghost" id="dev-back-btn">Go back</button>
     </div>
 
   </div>
@@ -7765,7 +7834,7 @@ var CONFIG = {
   appName:            'Asëa',
   appNameClean:       'Asea',
   tagline:            'Reveal the patterns your body already knows',
-  version:            'v25-21',
+  version:            'v25-26',
   storageKey:         'asea-v40',
   themeKey:           'asea-theme-v40',
   maxUsers:           1,
@@ -19034,6 +19103,570 @@ var ScreenShop = (function() {
 
 
 /* ══════════════════════════════════════════════════════════════
+   SECTION 16b — DEV TEST HARNESS
+   Hidden dev tool. Long-press version number in Settings → About.
+   Desktop only. Loads pre-built localStorage payloads to trigger
+   specific insight rule groups for testing.
+   future: dev/harness.js
+══════════════════════════════════════════════════════════════ */
+var DevHarness = (function() {
+
+  var _selectedScenario = null;
+
+  // ── Scenario definitions ─────────────────────────────────────
+  // Each scenario seeds enough log data to cross the threshold for
+  // every rule in that group. Timestamps are relative to now so
+  // rules always fire regardless of when the harness is run.
+  // All days spread within the default 30-day PATTERN_WINDOW.
+
+  var SCENARIOS = [
+
+    // ── Diet correlations (D-series) ─────────────────────────
+    // Targets: D1 (caffeine→urgency), D2 (dairy→bloating),
+    //          D3 (spicy→urgency), D5 (high_fat→bloating),
+    //          D6 (alcohol→urgency), D7 (processed_food→symptoms),
+    //          D9 (late_meal→symptoms)
+    {
+      id: 'diet',
+      label: 'Diet correlations (D)',
+      desc: 'Triggers D1–D9: caffeine, dairy, spicy, fat, alcohol, processed food patterns',
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var meals = [];
+        var bowel = [];
+        var uid = function(i) { return 'dev-d-' + i; };
+
+        // D1: caffeine (drink) → urgency within 3h — need 2 hits
+        // D3: spicy meal → urgency within 6h — need 2 hits
+        // D6: alcohol (drink) → urgency within 24h — need 2 hits
+        // Strategy: spread across 7 days, each day has input then symptom output
+
+        var pairs = [
+          // [daysAgo, mealTag, mealText, bowelHoursAfter, bowelSymptom]
+          { d: 2,  tag: 'dairy',          text: 'Greek yogurt and cheese',        bh: 6,  sym: 'bloating' },
+          { d: 4,  tag: 'dairy',          text: 'Milk, cheese, cream sauce',       bh: 8,  sym: 'bloating' },
+          { d: 6,  tag: 'dairy',          text: 'Cottage cheese, whey shake',      bh: 10, sym: 'bloating' },
+          { d: 3,  tag: 'spicy',          text: 'Spicy Thai curry',                bh: 3,  sym: 'urgency'  },
+          { d: 7,  tag: 'spicy',          text: 'Hot wings and jalapeños',         bh: 4,  sym: 'urgency'  },
+          { d: 5,  tag: 'high_fat',       text: 'Bacon, eggs, avocado toast',      bh: 5,  sym: 'bloating' },
+          { d: 9,  tag: 'high_fat',       text: 'Ribeye steak and butter',         bh: 7,  sym: 'bloating' },
+          { d: 8,  tag: 'processed_food', text: 'Fast food burger and fries',      bh: 10, sym: 'cramping' },
+          { d: 10, tag: 'processed_food', text: 'Deli sandwich, chips, hot dog',   bh: 12, sym: 'bloating' },
+          { d: 12, tag: 'processed_food', text: 'Frozen pizza, packaged snacks',   bh: 14, sym: 'urgency'  },
+          { d: 11, tag: 'late_meal',      text: 'Late night pizza at 10pm',        bh: 4,  sym: 'cramping' },
+          { d: 13, tag: 'late_meal',      text: 'Dinner at 11pm — heavy pasta',    bh: 5,  sym: 'bloating' },
+        ];
+
+        pairs.forEach(function(p, i) {
+          var mts = now - (p.d * DAY) + (18 * HOUR); // evening meal
+          meals.push({
+            id: uid(i), ts: mts, mealTs: mts, slot: 'dinner',
+            type: 'food', text: p.text, tags: [p.tag]
+          });
+          bowel.push({
+            id: uid(i) + 'b', ts: mts + (p.bh * HOUR),
+            bristolType: 5, color: 'brown', symptoms: [p.sym]
+          });
+        });
+
+        // D1: caffeine drinks → urgency (uses hydration log, not meal)
+        var hydration = [];
+        [1, 3].forEach(function(dAgo, i) {
+          var cts = now - (dAgo * DAY) + (8 * HOUR); // 8am coffee
+          hydration.push({ id: 'dev-caf-' + i, ts: cts, oz: 12, type: 'coffee' });
+          bowel.push({
+            id: 'dev-caf-' + i + 'b', ts: cts + (2 * HOUR),
+            bristolType: 6, color: 'brown', symptoms: ['urgency']
+          });
+        });
+
+        // D6: alcohol → urgency (uses hydration log — alcohol type)
+        [14, 16].forEach(function(dAgo, i) {
+          var ats = now - (dAgo * DAY) + (19 * HOUR);
+          hydration.push({ id: 'dev-alc-' + i, ts: ats, oz: 8, type: 'alcohol' });
+          bowel.push({
+            id: 'dev-alc-' + i + 'b', ts: ats + (10 * HOUR),
+            bristolType: 7, color: 'yellow', symptoms: ['urgency']
+          });
+        });
+
+        return { meals: meals, bowel: bowel, hydration: hydration };
+      }
+    },
+
+    // ── Glucose patterns (G-series) ──────────────────────────
+    // Targets: G1 (sugar→spike), G2 (refined_carbs→spike),
+    //          G4 (late_meal→elevated), G7 (balanced_meal→stable)
+    {
+      id: 'glucose',
+      label: 'Glucose patterns (G)',
+      desc: 'Triggers G1, G2, G4, G7: sugar spikes, refined carb spikes, late eating, balanced meals',
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var meals = [];
+        var glucose = [];
+        var uid = function(pfx, i) { return 'dev-g-' + pfx + i; };
+
+        // G1: sugar meal → glucose > 140 within 2h (threshold: 2, need count≥3 for medium)
+        [2, 5, 10].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (14 * HOUR); // 2pm
+          meals.push({ id: uid('s', i), ts: mts, mealTs: mts, slot: 'lunch', type: 'food', text: 'Candy, soda, cake', tags: ['sugar'] });
+          glucose.push({ id: uid('sg', i), ts: mts + (1 * HOUR), val: 155, context: 'after_meal' });
+        });
+
+        // G2: refined_carbs → glucose > 140 within 2h (threshold: 2, need count≥3 for medium)
+        [3, 7, 12].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (12 * HOUR);
+          meals.push({ id: uid('r', i), ts: mts, mealTs: mts, slot: 'lunch', type: 'food', text: 'White bread, white rice, pasta', tags: ['refined_carbs'] });
+          glucose.push({ id: uid('rg', i), ts: mts + (90 * 60 * 1000), val: 148, context: 'after_meal' });
+        });
+
+        // G4: late_meal → glucose > 100 within 10h (threshold: 2, need count≥3 for medium)
+        [4, 8, 14].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (22 * HOUR); // 10pm
+          meals.push({ id: uid('l', i), ts: mts, mealTs: mts, slot: 'dinner', type: 'food', text: 'Late dinner — heavy pasta at 10pm', tags: ['late_meal'] });
+          glucose.push({ id: uid('lg', i), ts: mts + (2 * HOUR), val: 118, context: 'bedtime' });
+        });
+
+        // G7: balanced_meal → glucose <= 100 within 2h (threshold: 2, need count≥3 for medium)
+        [1, 6, 11].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (13 * HOUR);
+          meals.push({ id: uid('b', i), ts: mts, mealTs: mts, slot: 'lunch', type: 'food', text: 'Salad, grilled chicken, olive oil', tags: ['balanced_meal'] });
+          glucose.push({ id: uid('bg', i), ts: mts + (1 * HOUR), val: 88, context: 'after_meal' });
+        });
+
+        return { meals: meals, glucose: glucose };
+      }
+    },
+
+    // ── Blood pressure (BP-series) ───────────────────────────
+    // Targets: BP1 (alcohol→elevated sys), BP2 (high_fat→elevated sys),
+    //          BP3 (processed_food→elevated sys), BP4 (caffeine→elevated sys)
+    // All BP rules require threshold: 3 (not 2)
+    {
+      id: 'bp',
+      label: 'Blood pressure (BP)',
+      desc: 'Triggers BP1–BP4: alcohol, high-fat meals, processed food, caffeine linked to elevated BP readings',
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var meals = [];
+        var bp    = [];
+        var hydration = [];
+        var uid = function(pfx, i) { return 'dev-bp-' + pfx + i; };
+
+        // BP1: alcohol → sys > 130 within 24h (threshold: 3)
+        [2, 5, 9].forEach(function(dAgo, i) {
+          var ats = now - (dAgo * DAY) + (19 * HOUR);
+          hydration.push({ id: uid('a', i), ts: ats, oz: 8, type: 'alcohol' });
+          bp.push({ id: uid('ag', i), ts: ats + (6 * HOUR), sys: 138, dia: 88, hr: 76, timeOfDay: 'evening', crisis: false });
+        });
+
+        // BP2: high_fat → sys > 130 within 6h (threshold: 3)
+        [3, 6, 10].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (12 * HOUR);
+          meals.push({ id: uid('f', i), ts: mts, mealTs: mts, slot: 'lunch', type: 'food', text: 'Ribeye, bacon, butter sauce', tags: ['high_fat'] });
+          bp.push({ id: uid('fg', i), ts: mts + (3 * HOUR), sys: 135, dia: 86, hr: 72, timeOfDay: 'afternoon', crisis: false });
+        });
+
+        // BP3: processed_food → sys > 130 within 24h (threshold: 3)
+        [4, 7, 11].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (18 * HOUR);
+          meals.push({ id: uid('p', i), ts: mts, mealTs: mts, slot: 'dinner', type: 'food', text: 'Fast food, deli, frozen meals', tags: ['processed_food'] });
+          bp.push({ id: uid('pg', i), ts: mts + (8 * HOUR), sys: 142, dia: 90, hr: 74, timeOfDay: 'evening', crisis: false });
+        });
+
+        // BP4: caffeine → sys > 130 within 2h (threshold: 3)
+        [1, 8, 12].forEach(function(dAgo, i) {
+          var cts = now - (dAgo * DAY) + (8 * HOUR);
+          hydration.push({ id: uid('c', i), ts: cts, oz: 12, type: 'coffee' });
+          bp.push({ id: uid('cg', i), ts: cts + (1 * HOUR), sys: 133, dia: 84, hr: 80, timeOfDay: 'morning', crisis: false });
+        });
+
+        return { meals: meals, bp: bp, hydration: hydration };
+      }
+    },
+
+    // ── Food Quality & Bowel health (FQ-series) ──────────────
+    // Targets: FQ1 (low_glycemic→stable glucose), FQ2 (high_fiber→improved stool),
+    //          FQ3 (dairy→bowel bloating), FQ8 (gut_support→stable),
+    //          FQ10 (probiotic→stable)
+    // All FQ trend rules need count≥3 for medium display threshold.
+    {
+      id: 'fq',
+      label: 'Food quality & bowel health (FQ)',
+      desc: 'Triggers FQ1–FQ10: low-glycemic foods, fiber, dairy symptoms, gut support, probiotics',
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var meals = [];
+        var bowel = [];
+        var glucose = [];
+        var uid = function(pfx, i) { return 'dev-fq-' + pfx + i; };
+
+        // FQ1: low_glycemic meals → stable glucose (trend, windowDays:14, threshold:3)
+        // Needs 3+ low_glycemic meals + 3+ glucose readings ≤100
+        [1, 3, 5, 7, 9].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (12 * HOUR);
+          meals.push({ id: uid('lg', i), ts: mts, mealTs: mts, slot: 'lunch', type: 'food',
+            text: 'Salad, lentils, berries, avocado', tags: ['low_glycemic'] });
+          glucose.push({ id: uid('lgg', i), ts: mts + HOUR, val: 88, context: 'after_meal' });
+        });
+
+        // FQ2: high_fiber → improved stool (Bristol 3-4) (trend, threshold:3)
+        [2, 4, 6, 8].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (8 * HOUR);
+          meals.push({ id: uid('hf', i), ts: mts, mealTs: mts, slot: 'breakfast', type: 'food',
+            text: 'Oats, flaxseed, psyllium, beans', tags: ['high_fiber'] });
+          bowel.push({ id: uid('hfb', i), ts: mts + (6 * HOUR),
+            bristolType: 4, color: 'brown', symptoms: [] });
+        });
+
+        // FQ3: dairy → bowel bloating (windowH:24, threshold:3 for FQ3 specifically)
+        [3, 7, 11].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (18 * HOUR);
+          meals.push({ id: uid('dy', i), ts: mts, mealTs: mts, slot: 'dinner', type: 'food',
+            text: 'Cheese, milk, cream sauce, yogurt', tags: ['dairy'] });
+          bowel.push({ id: uid('dyb', i), ts: mts + (8 * HOUR),
+            bristolType: 5, color: 'brown', symptoms: ['bloating'] });
+        });
+
+        // FQ8: gut_support (bone broth/gelatin) → stable trend (windowDays:14, threshold:3)
+        [1, 4, 8, 12].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (7 * HOUR);
+          meals.push({ id: uid('gs', i), ts: mts, mealTs: mts, slot: 'breakfast', type: 'food',
+            text: 'Bone broth, gelatin', tags: ['gut_support'] });
+        });
+
+        // FQ10: probiotic foods → stable trend (windowDays:14, threshold:3)
+        [2, 5, 9, 13].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (13 * HOUR);
+          meals.push({ id: uid('pb', i), ts: mts, mealTs: mts, slot: 'lunch', type: 'food',
+            text: 'Kimchi, sauerkraut, kefir', tags: ['probiotic'] });
+        });
+
+        return { meals: meals, bowel: bowel, glucose: glucose };
+      }
+    },
+
+    // ── Supplements & medications (SM-series) ────────────────
+    // Targets: SM01 (supp side-effect correlation), SM02 (new supp → new symptom),
+    //          SM08 (insulin_sensitivity supp + glucose trending lower)
+    // SM03/SM04 deferred — require 42-day window or 2-week logging history
+    {
+      id: 'sm',
+      label: 'Supplements & medications (SM)',
+      desc: 'Triggers SM01, SM02, SM08: side-effect patterns, new supplement watch, glucose improvement',
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var suppLogs = [];
+        var symptoms = [];
+        var glucose  = [];
+        var uid = function(pfx, i) { return 'dev-sm-' + pfx + '-' + i; };
+
+        // ── SM08: Berberine (insulin_sensitivity) + glucose trending lower ────
+        // Needs: item with benefits:['insulin_sensitivity'], logged 10+ distinct days,
+        //        glucose readings in same window trending lower (second half avg < first half avg)
+        var berberineId = 'dev-berb-01';
+        var berberine = {
+          id: berberineId,
+          name: 'Berberine',
+          dose: '500 mg', doseUnit: 'mg',
+          slots: ['morning'],
+          cat: 'Blood Sugar & Metabolic',
+          fx: ['loose_stool', 'nausea', 'cramping', 'bloating'],
+          sideEffects: ['loose_stool', 'nausea', 'cramping', 'bloating'],
+          benefits: ['insulin_sensitivity', 'a1c_support', 'cholesterol', 'gut'],
+          brandNames: [], changeLog: [],
+          addedTs: now - (32 * DAY)  // added 32 days ago — outside SM02 14-day window
+        };
+
+        // Log Berberine 12 distinct days over last 30 days (meets 10+ day requirement)
+        [1,2,3,4,5,6,8,10,12,15,18,22].forEach(function(dAgo, i) {
+          suppLogs.push({
+            id: uid('berb', i), ts: now - (dAgo * DAY) + (8 * HOUR),
+            slot: 'morning', logType: 'individual', groupLabel: null,
+            items: [{ itemId: berberineId, name: 'Berberine', itemType: 'supp', dose: '500 mg' }]
+          });
+        });
+
+        // Glucose readings trending lower over 30 days
+        // First half (days 25-15): higher readings ~120-130
+        // Second half (days 10-1): lower readings ~95-105
+        [25, 22, 18, 15].forEach(function(dAgo, i) {
+          glucose.push({ id: uid('g1', i), ts: now - (dAgo * DAY) + (9 * HOUR), val: 122 + (i * 3), context: 'fasting' });
+        });
+        [10, 7, 4, 1].forEach(function(dAgo, i) {
+          glucose.push({ id: uid('g2', i), ts: now - (dAgo * DAY) + (9 * HOUR), val: 98 + (i * 2), context: 'fasting' });
+        });
+
+        // ── SM01: Magnesium → bloating symptom within 48h ────────────────────
+        // Needs: item logged 3+ distinct days, matching fx symptom appears within 48h
+        var magId = 'dev-mag-01';
+        var magnesium = {
+          id: magId,
+          name: 'Magnesium Glycinate',
+          dose: '400 mg', doseUnit: 'mg',
+          slots: ['evening'],
+          cat: 'Blood Pressure & Heart',
+          fx: ['loose_stool', 'sleep_effect'],
+          sideEffects: ['loose_stool', 'sleep_effect'],
+          benefits: ['insulin_sensitivity', 'sleep', 'muscle', 'mood'],
+          brandNames: [], changeLog: [],
+          addedTs: now - (20 * DAY)
+        };
+
+        // Log Magnesium 5 evenings, symptoms appear next morning (within 48h)
+        [3, 6, 9, 12, 15].forEach(function(dAgo, i) {
+          var logTs = now - (dAgo * DAY) + (21 * HOUR); // 9pm
+          suppLogs.push({
+            id: uid('mag', i), ts: logTs,
+            slot: 'evening', logType: 'individual', groupLabel: null,
+            items: [{ itemId: magId, name: 'Magnesium Glycinate', itemType: 'supp', dose: '400 mg' }]
+          });
+          // Symptom (bloating = loose_stool maps to bloating in FX_TO_SYM) next morning
+          symptoms.push({
+            id: uid('mags', i), ts: logTs + (10 * HOUR),
+            symptoms: ['bloating'], severity: 1, note: ''
+          });
+        });
+
+        // ── SM02: New supplement added 5 days ago → new symptom appears ──────
+        // Needs: addedTs within 14 days, NO matching symptom before addedTs,
+        //        NEW symptom appears after addedTs
+        var newSuppId = 'dev-new-01';
+        var newAddedTs = now - (5 * DAY);
+        var newSupp = {
+          id: newSuppId,
+          name: 'Berberine',  // second entry — simulates user just starting it
+          dose: '500 mg', doseUnit: 'mg',
+          slots: ['morning'],
+          cat: 'Blood Sugar & Metabolic',
+          fx: ['loose_stool', 'nausea', 'cramping', 'bloating'],
+          sideEffects: ['loose_stool', 'nausea', 'cramping', 'bloating'],
+          benefits: ['insulin_sensitivity', 'a1c_support'],
+          brandNames: [], changeLog: [],
+          addedTs: newAddedTs
+        };
+
+        // Logs AFTER addedTs — new symptom (nausea) that didn't appear before
+        [1, 2, 3, 4].forEach(function(dAgo, i) {
+          var logTs = now - (dAgo * DAY) + (8 * HOUR);
+          suppLogs.push({
+            id: uid('new', i), ts: logTs,
+            slot: 'morning', logType: 'individual', groupLabel: null,
+            items: [{ itemId: newSuppId, name: 'Berberine', itemType: 'supp', dose: '500 mg' }]
+          });
+          symptoms.push({
+            id: uid('news', i), ts: logTs + (2 * HOUR),
+            symptoms: ['nausea'], severity: 1, note: ''
+          });
+        });
+
+        return {
+          suppLogs: suppLogs,
+          symptoms: symptoms,
+          glucose: glucose,
+          supplements: [berberine, magnesium, newSupp],
+          medications: []
+        };
+      }
+    },
+
+  ]; // end SCENARIOS
+
+  // ── Build payload ────────────────────────────────────────────
+  // Merges scenario log data into a full valid state object.
+  function _buildPayload(scenario) {
+    var now = Date.now();
+    var data = scenario.build(now);
+
+    return {
+      onboardingComplete: true,
+      profile: {
+        fullName: 'Dev Test',
+        preferredName: 'Dev',
+        weight: 180,
+        height: "5' 11\"",
+        age: 40,
+        sex: 'male',
+        wakeTimeWeekday: '06:30',
+        wakeTimeWeekend: '07:30',
+        healthGoals: 'Dev test scenario — ' + scenario.label,
+      },
+      goals: { hydrationOz: 80 },
+      supplements: data.supplements || [],
+      medications: data.medications || [],
+      shop: [],
+      shopLastTrip: [],
+      shopCatOrder: [],
+      logs: {
+        hydration: data.hydration || [],
+        meals:     data.meals     || [],
+        suppLogs:  data.suppLogs  || [],
+        bowel:     data.bowel     || [],
+        bp:        data.bp        || [],
+        glucose:   data.glucose   || [],
+        weight:    data.weight    || [],
+        symptoms:  data.symptoms  || [],
+      },
+      theme: 'light',
+      units: 'imperial',
+      settings: {
+        backupInterval: 'weekly',
+        lastBackupTs: null,
+        lastBackupFname: null,
+        coffeeDefault: 'coffee',
+      },
+      favoriteDrinks: [],
+      customDrinks: [],
+    };
+  }
+
+  // ── Panel navigation ─────────────────────────────────────────
+  function _goTo(n) {
+    [1, 2, 3, 4].forEach(function(i) {
+      var p = document.getElementById('dev-panel-' + i);
+      if (p) p.classList.toggle('active', i === n);
+    });
+  }
+
+  // ── Render scenario list ──────────────────────────────────────
+  function _renderList() {
+    var list = document.getElementById('dev-scenario-list');
+    if (!list) return;
+    list.innerHTML = SCENARIOS.map(function(s) {
+      return '<button class="btn-ghost" style="text-align:left;padding:14px 16px;" data-scenario-id="' + s.id + '">'
+        + '<div style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:3px;">' + s.label + '</div>'
+        + '<div style="font-size:12px;color:var(--mt);line-height:1.4;">' + s.desc + '</div>'
+        + '</button>';
+    }).join('');
+
+    list.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-scenario-id]');
+      if (!btn) return;
+      var sc = SCENARIOS.filter(function(s) { return s.id === btn.dataset.scenarioId; })[0];
+      if (!sc) return;
+      _selectedScenario = sc;
+      var label = document.getElementById('dev-confirm-scenario');
+      if (label) label.textContent = sc.label + ' — ' + sc.desc;
+      _goTo(3);
+    });
+  }
+
+  // ── Public API ───────────────────────────────────────────────
+  function open() {
+    _selectedScenario = null;
+    _goTo(1);
+    // Reset backup panel to default state
+    var defEl = document.getElementById('dev-backup-default');
+    var sucEl = document.getElementById('dev-backup-success');
+    if (defEl) defEl.style.display = 'block';
+    if (sucEl) sucEl.style.display = 'none';
+    var inp = document.getElementById('dev-type-input');
+    var btn = document.getElementById('dev-load-btn');
+    if (inp) { inp.value = ''; inp.classList.remove('ready'); }
+    if (btn) btn.disabled = true;
+    Components.openSheet('sheet-dev-harness');
+  }
+
+  function bindEvents() {
+    var closeBtn = document.getElementById('dev-close-btn');
+    if (closeBtn) closeBtn.addEventListener('click', function() { Components.closeSheet(); });
+
+    // Panel 1: Back Up Now — delegates to existing wired export button
+    var backupBtn = document.getElementById('dev-backup-now-btn');
+    if (backupBtn) backupBtn.addEventListener('click', function() {
+      var exportBtn = document.getElementById('backup-export-btn');
+      if (exportBtn) exportBtn.click();
+      // Brief delay to let export run, then check for fname
+      setTimeout(function() {
+        var s = State.get();
+        var fname = s.settings && s.settings.lastBackupFname;
+        var fnameLabel = document.getElementById('dev-backup-fname-label');
+        if (fnameLabel) fnameLabel.textContent = fname ? fname + ' is in your Downloads folder.' : 'File saved to Downloads folder.';
+        var defEl = document.getElementById('dev-backup-default');
+        var sucEl = document.getElementById('dev-backup-success');
+        if (defEl) defEl.style.display = 'none';
+        if (sucEl) sucEl.style.display = 'block';
+      }, 600);
+    });
+
+    // Panel 1: Continue after backup
+    var continueBtn = document.getElementById('dev-continue-btn');
+    if (continueBtn) continueBtn.addEventListener('click', function() {
+      _renderList();
+      _goTo(2);
+    });
+
+    // Panel 1: Skip backup
+    var skipBtn = document.getElementById('dev-skip-backup-btn');
+    if (skipBtn) skipBtn.addEventListener('click', function() {
+      _renderList();
+      _goTo(2);
+    });
+
+    // Panel 3: Proceed to type-confirm
+    var proceedBtn = document.getElementById('dev-confirm-proceed-btn');
+    if (proceedBtn) proceedBtn.addEventListener('click', function() {
+      var inp = document.getElementById('dev-type-input');
+      var btn = document.getElementById('dev-load-btn');
+      if (inp) { inp.value = ''; inp.classList.remove('ready'); }
+      if (btn) btn.disabled = true;
+      _goTo(4);
+    });
+
+    // Panel 3: Cancel → back to list
+    var cancelBtn = document.getElementById('dev-confirm-cancel-btn');
+    if (cancelBtn) cancelBtn.addEventListener('click', function() {
+      _goTo(2);
+    });
+
+    // Panel 4: Go back → panel 3
+    var backBtn = document.getElementById('dev-back-btn');
+    if (backBtn) backBtn.addEventListener('click', function() {
+      var inp = document.getElementById('dev-type-input');
+      if (inp) { inp.value = ''; inp.classList.remove('ready'); }
+      var btn = document.getElementById('dev-load-btn');
+      if (btn) btn.disabled = true;
+      _goTo(3);
+    });
+
+    // Panel 4: Type input
+    var typeInput = document.getElementById('dev-type-input');
+    if (typeInput) typeInput.addEventListener('input', function() {
+      var btn = document.getElementById('dev-load-btn');
+      var match = this.value.toUpperCase() === 'LOAD';
+      this.classList.toggle('ready', match);
+      if (btn) btn.disabled = !match;
+    });
+
+    // Panel 4: Load
+    var loadBtn = document.getElementById('dev-load-btn');
+    if (loadBtn) loadBtn.addEventListener('click', function() {
+      var inp = document.getElementById('dev-type-input');
+      if (!inp || inp.value.toUpperCase() !== 'LOAD') return;
+      if (!_selectedScenario) return;
+      var payload = _buildPayload(_selectedScenario);
+      try {
+        localStorage.setItem('asea-v40', JSON.stringify(payload));
+      } catch(e) {
+        Components.toast('Error writing test data: ' + e.message);
+        return;
+      }
+      Components.closeSheet();
+      setTimeout(function() { location.reload(); }, 300);
+    });
+  }
+
+  return { open: open, bindEvents: bindEvents };
+
+})();
+
+/* ══════════════════════════════════════════════════════════════
    SECTION 16 — BOOT — ALWAYS LAST
    future: main.js
 ══════════════════════════════════════════════════════════════ */
@@ -19124,6 +19757,7 @@ var App = (function() {
 
     // 5. Init settings
     ScreenSettings.bindEvents();
+    DevHarness.bindEvents();
 
     // 6. Init collapsing headers
     Components.initCollapsingHeaders();
@@ -19795,9 +20429,9 @@ var ScreenSettings = (function() {
       render();
     });
 
-    // 'Merica! easter egg — long-press version number to unlock
+    // 'Merica! easter egg — long-press "Asëa" title in About section to unlock
     (function() {
-      var verEl = document.getElementById('about-version');
+      var verEl = document.getElementById('about-asea-title');
       if (!verEl) return;
       var _pressTimer = null;
       var HOLD_MS = 2000;
@@ -19851,6 +20485,29 @@ var ScreenSettings = (function() {
       verEl.addEventListener('mousedown', _devStart);
       verEl.addEventListener('mouseup', _devCancel);
       verEl.addEventListener('mouseleave', _devCancel);
+    })();
+
+    // ── Dev Test Harness — long-press version number 2s ──────
+    (function() {
+      var verEl = document.getElementById('about-version');
+      if (!verEl) return;
+      var _harnessTimer = null;
+      var HOLD_MS = 3000;
+
+      function _harnessStart() {
+        _harnessTimer = setTimeout(function() {
+          DevHarness.open();
+        }, HOLD_MS);
+      }
+      function _harnessCancel() {
+        if (_harnessTimer) { clearTimeout(_harnessTimer); _harnessTimer = null; }
+      }
+      verEl.addEventListener('touchstart', _harnessStart, { passive: true });
+      verEl.addEventListener('touchend',   _harnessCancel);
+      verEl.addEventListener('touchcancel',_harnessCancel);
+      verEl.addEventListener('mousedown',  _harnessStart);
+      verEl.addEventListener('mouseup',    _harnessCancel);
+      verEl.addEventListener('mouseleave', _harnessCancel);
     })();
   }
 
