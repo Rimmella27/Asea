@@ -1028,9 +1028,9 @@ input, textarea { font-family: inherit; }
 }
 
 /* Colors */
-.radial-btn.type-meal    { background: linear-gradient(145deg, #d4874a, #b86e32); }
+.radial-btn.type-meal    { background: linear-gradient(145deg, #9f74af, #7d5591); }
 .radial-btn.type-drink   { background: linear-gradient(145deg, #4a8fd4, #3270b8); }
-.radial-btn.type-bowel   { background: linear-gradient(145deg, #9f74af, #7d5591); }
+.radial-btn.type-bowel   { background: linear-gradient(145deg, #a0714a, #7a5234); }
 .radial-btn.type-shop    { background: linear-gradient(145deg, #6a9158, #4d7040); }
 .radial-btn.type-bp      { background: linear-gradient(145deg, #d45a5a, #b83e3e); }
 .radial-btn.type-glucose { background: linear-gradient(145deg, #4aaa8a, #328a6e); }
@@ -1474,8 +1474,8 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
 
 /* Track icon backgrounds */
 .ti-hydration { background: rgba(58,127,193,0.12); }
-.ti-meal      { background: rgba(193,123,58,0.12); }
-.ti-bowel     { background: rgba(155,107,155,0.12); }
+.ti-meal      { background: rgba(155,107,155,0.12); }
+.ti-bowel     { background: rgba(130,90,60,0.12); }
 .ti-bp        { background: rgba(193,74,74,0.12); }
 .ti-glucose   { background: rgba(74,155,127,0.12); }
 .ti-weight    { background: rgba(92,110,74,0.12); }
@@ -1483,8 +1483,8 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
 
 /* Dark theme: stronger alpha so pills read against dark surfaces */
 [data-theme="dark"] .ti-hydration { background: rgba(58,127,193,0.22); }
-[data-theme="dark"] .ti-meal      { background: rgba(193,123,58,0.22); }
-[data-theme="dark"] .ti-bowel     { background: rgba(155,107,155,0.22); }
+[data-theme="dark"] .ti-meal      { background: rgba(155,107,155,0.22); }
+[data-theme="dark"] .ti-bowel     { background: rgba(130,90,60,0.22); }
 [data-theme="dark"] .ti-bp        { background: rgba(193,74,74,0.22); }
 [data-theme="dark"] .ti-glucose   { background: rgba(74,155,127,0.22); }
 [data-theme="dark"] .ti-weight    { background: rgba(92,110,74,0.22); }
@@ -7834,7 +7834,7 @@ var CONFIG = {
   appName:            'Asëa',
   appNameClean:       'Asea',
   tagline:            'Reveal the patterns your body already knows',
-  version:            'v25-26',
+  version:            'v25-29',
   storageKey:         'asea-v40',
   themeKey:           'asea-theme-v40',
   maxUsers:           1,
@@ -10698,6 +10698,7 @@ var ScreenInsights = (function() {
     energy:    { label: 'Energy',         mod: '--energy'    },
     positive:  { label: 'Positive',       mod: '--positive'  },
     early:     { label: 'New Addition',   mod: '--early'     },
+    supp:      { label: 'Supplements',    mod: '--bp'        },  // reuses BP blue styling
   };
 
   // Maps a single insight object → its category definition.
@@ -10710,7 +10711,7 @@ var ScreenInsights = (function() {
     if (prefix === 'SM') {
       // SM05 positive pairs (fat-soluble vitamins + fat) render as positive
       if (ins.id === 'SM05' && ins._sm05Positive) return _CATS.positive;
-      return _CATS.bp; // Supp/Med rules — use BP blue (health-adjacent)
+      return _CATS.supp; // Supp/Med rules — dedicated Supplements category
     }
     if (prefix === 'HT') {
       if (ins.id === 'HTP') return _CATS.positive;
@@ -19441,7 +19442,7 @@ var DevHarness = (function() {
         var newAddedTs = now - (5 * DAY);
         var newSupp = {
           id: newSuppId,
-          name: 'Berberine',  // second entry — simulates user just starting it
+          name: 'Berberine (new start)',  // distinct name — avoids SM08 "Berberine and Berberine" text
           dose: '500 mg', doseUnit: 'mg',
           slots: ['morning'],
           cat: 'Blood Sugar & Metabolic',
@@ -19458,7 +19459,7 @@ var DevHarness = (function() {
           suppLogs.push({
             id: uid('new', i), ts: logTs,
             slot: 'morning', logType: 'individual', groupLabel: null,
-            items: [{ itemId: newSuppId, name: 'Berberine', itemType: 'supp', dose: '500 mg' }]
+            items: [{ itemId: newSuppId, name: 'Berberine (new start)', itemType: 'supp', dose: '500 mg' }]
           });
           symptoms.push({
             id: uid('news', i), ts: logTs + (2 * HOUR),
@@ -19473,6 +19474,87 @@ var DevHarness = (function() {
           supplements: [berberine, magnesium, newSupp],
           medications: []
         };
+      }
+    },
+
+    // ── Hydration timing — concern (HT1 + HT2) ───────────────
+    // HT1: 3+ days with zero fluids before 10am AND avg total < 80% goal
+    // HT2: 3+ days where >60% of daily oz logged after 6pm
+    // IMPORTANT: timestamps must use local midnight as base, not UTC,
+    // because getHours() in the engine reads local time.
+    {
+      id: 'ht_concern',
+      label: 'Hydration timing — concern (HT)',
+      desc: 'Triggers HT1 + HT2: late hydration start and evening fluid loading patterns',
+      build: function(now) {
+        var hydration = [];
+        var uid = function(pfx, i) { return 'dev-ht-' + pfx + '-' + i; };
+
+        // Helper: get local midnight for a given number of days ago
+        function localMidnight(dAgo) {
+          var d = new Date();
+          d.setDate(d.getDate() - dAgo);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }
+
+        [1, 2, 3, 4, 5, 6, 7].forEach(function(dAgo, i) {
+          var midnight = localMidnight(dAgo);
+
+          // 11am local — not before 10am, clears HT1 early-intake check
+          hydration.push({ id: uid('m', i),  ts: midnight + (11 * 3600000), oz: 10, type: 'water' });
+
+          // 7pm local (hour 19) — after 6pm (hour 18), counts as evening for HT2
+          hydration.push({ id: uid('e1', i), ts: midnight + (19 * 3600000), oz: 20, type: 'water' });
+
+          // 8:30pm local — also after 6pm
+          hydration.push({ id: uid('e2', i), ts: midnight + (20.5 * 3600000), oz: 10, type: 'water' });
+
+          // Per day: total=40oz (below 80% of 80oz goal=64oz → HT1 fires)
+          // Evening: 30oz of 40oz = 75% after 6pm (above 60% → HT2 fires)
+          // Before 10am: 0oz → HT1 lateStartDays increments
+        });
+
+        return { hydration: hydration };
+      }
+    },
+
+    // ── Hydration timing — positive (HTP) ────────────────────
+    // HTP: 5+ days meeting ≥80% of goal.
+    // Must NOT trigger HT1 (needs before-10am intake to clear suppression).
+    {
+      id: 'ht_positive',
+      label: 'Hydration — positive habit (HTP)',
+      desc: 'Triggers HTP: consistently hitting hydration goal with good timing',
+      build: function(now) {
+        var hydration = [];
+        var uid = function(pfx, i) { return 'dev-htp-' + pfx + '-' + i; };
+
+        function localMidnight(dAgo) {
+          var d = new Date();
+          d.setDate(d.getDate() - dAgo);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }
+
+        [1, 2, 3, 4, 5, 6, 7, 8].forEach(function(dAgo, i) {
+          var midnight = localMidnight(dAgo);
+
+          // 7am — 16oz (before 10am, clears HT1 suppression)
+          hydration.push({ id: uid('a', i), ts: midnight + (7  * 3600000), oz: 16, type: 'water' });
+          // 10am — 16oz
+          hydration.push({ id: uid('b', i), ts: midnight + (10 * 3600000), oz: 16, type: 'water' });
+          // 1pm — 16oz
+          hydration.push({ id: uid('c', i), ts: midnight + (13 * 3600000), oz: 16, type: 'water' });
+          // 5pm — 16oz (before 6pm, keeps evening% at 0%, clears HT2)
+          hydration.push({ id: uid('d', i), ts: midnight + (17 * 3600000), oz: 16, type: 'water' });
+
+          // Per day: 64oz = exactly 80% of 80oz goal → HTP fires
+          // Before 10am: 16oz → HT1 lateStart NOT triggered
+          // After 6pm: 0oz → HT2 NOT triggered
+        });
+
+        return { hydration: hydration };
       }
     },
 
