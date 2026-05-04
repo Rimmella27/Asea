@@ -7834,7 +7834,7 @@ var CONFIG = {
   appName:            'Asëa',
   appNameClean:       'Asea',
   tagline:            'Reveal the patterns your body already knows',
-  version:            'v25-29',
+  version:            'v25-30',
   storageKey:         'asea-v40',
   themeKey:           'asea-theme-v40',
   maxUsers:           1,
@@ -12984,16 +12984,18 @@ var InsightEngine = (function() {
     {
       id: 'HT1', priority: 1, windowDays: 14,
       inputTag: null, outputType: 'trend', outputKey: 'late_start',
-      windowH: null, threshold: 5, icon: '🌅',
+      windowH: null, threshold: 3, icon: '🌅',
       text: 'You haven\'t logged any fluids before 10am on several recent days. Starting hydration earlier helps your body reach its daily goal more naturally — and supports kidney function and energy levels through the morning.',
       tip: 'Try a glass of water within 30 minutes of waking. It\'s one of the smallest habits with a noticeable effect.',
       // Rationale: Morning dehydration (overnight fast ~8h) is physiologically
       // significant. Early fluid intake restores blood volume, supports kidney
       // filtration, and primes gut motility. Front-loading hydration is
       // associated with better daily total achievement.
-      // Rule fires when 5+ of last 14 days have zero hydration logs before 10am,
+      // Rule fires when 3+ of last 14 days have zero hydration logs before 10am,
       // AND the user is not already consistently hitting their daily goal
       // (no fire if avg oz >= 80% of goal — they're managing fine regardless).
+      // NOTE: threshold was 5 in rule definition but implementation enforced 3.
+      // Aligned to 3 (v25-30) — fires sooner for new users.
     },
 
     {
@@ -13414,9 +13416,10 @@ var InsightEngine = (function() {
     // Silent non-fire if neither wake time is set in profile.
     if (rule.id === 'FQ9') {
       var p = s.profile;
-      return (s.logs.drinks || []).filter(function(d) {
+      return (s.logs.hydration || []).filter(function(d) {
         if (d.ts < cutoff) return false;
-        if (!d.tags || d.tags.indexOf('caffeine') === -1) return false;
+        var dTags = _DRINK_TAG_MAP[d.type] || [];
+        if (dTags.indexOf('caffeine') === -1) return false;
         var logDate = new Date(d.ts);
         var dow = logDate.getDay(); // 0=Sun, 6=Sat
         var isWeekend = (dow === 0 || dow === 6);
@@ -13434,9 +13437,10 @@ var InsightEngine = (function() {
     // Positive counterpart to FQ9. Suppressed if FQ9 also qualifies (FQ9 wins).
     if (rule.id === 'FQ12') {
       var p12 = s.profile;
-      var goodTimingCount = (s.logs.drinks || []).filter(function(d) {
+      var goodTimingCount = (s.logs.hydration || []).filter(function(d) {
         if (d.ts < cutoff) return false;
-        if (!d.tags || d.tags.indexOf('caffeine') === -1) return false;
+        var dTags12g = _DRINK_TAG_MAP[d.type] || [];
+        if (dTags12g.indexOf('caffeine') === -1) return false;
         var logDate = new Date(d.ts);
         var dow = logDate.getDay();
         var isWeekend = (dow === 0 || dow === 6);
@@ -13449,9 +13453,10 @@ var InsightEngine = (function() {
         return diffMin > 90; // positive: after the 90-min window
       }).length;
       // Suppress if FQ9 (bad timing) also has 3+ hits — don't praise and warn simultaneously
-      var badTimingCount = (s.logs.drinks || []).filter(function(d) {
+      var badTimingCount = (s.logs.hydration || []).filter(function(d) {
         if (d.ts < cutoff) return false;
-        if (!d.tags || d.tags.indexOf('caffeine') === -1) return false;
+        var dTags12b = _DRINK_TAG_MAP[d.type] || [];
+        if (dTags12b.indexOf('caffeine') === -1) return false;
         var logDate = new Date(d.ts);
         var dow = logDate.getDay();
         var isWeekend = (dow === 0 || dow === 6);
@@ -13832,7 +13837,7 @@ var InsightEngine = (function() {
 
           var matchCount = 0;
           symLogs01.forEach(function(sl) {
-            if (!(sl.symptoms || []).indexOf(symKey) > -1) return;
+            if ((sl.symptoms || []).indexOf(symKey) === -1) return;
             // Check if any suppLog for this item was within 48h before this symptom
             var matched = (s.logs.suppLogs || []).some(function(supL) {
               if (supL.ts < cutoff) return false;
