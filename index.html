@@ -4169,6 +4169,19 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
 .meals-log-item-amount {
   font-size: 11px; color: var(--mt); font-weight: 400;
 }
+.meals-log-edit {
+  background: none;
+  border: none;
+  padding: 4px;
+  margin-left: 2px;
+  color: var(--mt);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+.meals-log-edit:hover { opacity: 1; }
+
 .meals-log-item-time {
   font-size: 11px; color: var(--mt); flex-shrink: 0;
 }
@@ -7167,6 +7180,37 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
   </div>
 </div>
 
+<!-- Meal edit sheet -->
+<div class="sheet" id="sheet-meal-edit" role="dialog" aria-modal="true" aria-label="Edit meal entry">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title-row">
+    <div class="sheet-title">Edit Entry</div>
+    <button class="icon-btn" id="meal-edit-close-btn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="meal-entry-textarea" id="meal-edit-text" rows="2" placeholder="What did you have?"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Slot</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="meal-edit-slot-pills">
+        <button class="wt-tod-pill" data-slot="breakfast">Breakfast</button>
+        <button class="wt-tod-pill" data-slot="lunch">Lunch</button>
+        <button class="wt-tod-pill" data-slot="dinner">Dinner</button>
+        <button class="wt-tod-pill" data-slot="snack">Snack</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Time</label>
+      <div id="meal-edit-time-picker"></div>
+    </div>
+    <button class="btn-primary" id="meal-edit-save-btn">Save Changes</button>
+  </div>
+</div>
+
 <!-- Meal sheet -->
 <div class="sheet" id="sheet-meal" role="dialog" aria-modal="true" aria-label="Log meal">
   <div class="sheet-inner">
@@ -7716,10 +7760,15 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
     <!-- Panel 3: Confirm -->
     <div class="reset-panel" id="dev-panel-3">
       <div class="reset-step-title" id="dev-confirm-title">Load test data?</div>
-      <div class="reset-warning-box">
+      <div class="reset-warning-box" id="dev-confirm-box-danger" style="">
         <strong id="dev-confirm-scenario"></strong><br><br>
         This will permanently erase all your tracked health data and replace it with test data.<br>
         <div style="margin-top:10px;text-align:center;font-weight:700;letter-spacing:0.06em;color:#b42828;">THIS CANNOT BE UNDONE.</div>
+      </div>
+      <div id="dev-confirm-box-negative" style="display:none;background:#e8f5e9;border:1.5px solid #2e7d32;border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:13px;color:#1b5e20;font-weight:600;margin-bottom:6px;">✓ Negative test — silence is the goal</div>
+        <div id="dev-confirm-scenario-neg" style="font-size:13px;color:#2e7d32;line-height:1.5;"></div>
+        <div style="margin-top:10px;font-size:12px;color:#388e3c;font-style:italic;">After load: go to Insights. Zero cards = test passed. Any insight firing = investigate.</div>
       </div>
       <button class="btn-primary" id="dev-confirm-proceed-btn" style="margin-bottom:12px;">Continue →</button>
       <button class="btn-ghost" id="dev-confirm-cancel-btn">Cancel</button>
@@ -7730,6 +7779,7 @@ html:not([data-theme]), [data-theme=""] { --radial-label-color: #fff; }
       <div id="dev-panel-4-handle" style="width:36px;height:4px;border-radius:2px;background:#b42828;opacity:0.5;margin:-4px auto 20px;"></div>
       <div class="reset-step-title">Type LOAD to confirm</div>
       <div class="reset-step-sub">Last chance. Type LOAD in capitals to replace all data with the test scenario.</div>
+      <div id="dev-negative-reminder" style="display:none;background:#e8f5e9;border:1.5px solid #2e7d32;border-radius:12px;padding:10px 14px;margin:12px 0;font-size:12px;color:#2e7d32;font-weight:600;">✓ Negative test — after loading, go to Insights. Zero cards = pass.</div>
       <input class="reset-confirm-input" id="dev-type-input" type="text" placeholder="LOAD" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
       <div style="height:16px;"></div>
       <button class="btn-destructive-solid" id="dev-load-btn" disabled>Load Test Data</button>
@@ -7834,7 +7884,7 @@ var CONFIG = {
   appName:            'Asëa',
   appNameClean:       'Asea',
   tagline:            'Reveal the patterns your body already knows',
-  version:            'v25-30',
+  version:            'v25-32',
   storageKey:         'asea-v40',
   themeKey:           'asea-theme-v40',
   maxUsers:           1,
@@ -12761,7 +12811,7 @@ var InsightEngine = (function() {
       id: 'FQ6', priority: 1, windowDays: 14,
       inputTag: 'nutrient_dense', outputType: 'trend', outputKey: 'stable',
       windowH: null, threshold: 3, icon: '🫀',
-      text: 'Liver powder has appeared in your logs. It\'s one of the densest sources of fat-soluble vitamins (A, D, K) and bioavailable iron — nutrients most people are quietly deficient in.',
+      text: 'Liver powder has appeared in your logs. It\'s one of the densest sources of fat-soluble vitamins (A, D, K) and bioavailable iron — nutrients that are easy to under-consume on a typical modern diet.',
       tip: 'Log it alongside a meal with healthy fat (avocado, olive oil, butter). Fat-soluble vitamins need dietary fat to absorb.',
       // Rationale: Desiccated liver is rich in preformed vitamin A, D, K,
       // B12, heme iron, and CoQ10. Fat-soluble vitamins require dietary fat
@@ -12777,7 +12827,7 @@ var InsightEngine = (function() {
       inputTag: 'resistant_starch', outputType: 'trend', outputKey: 'stable',
       windowH: null, threshold: 3, icon: '🌾',
       text: 'Potato starch has shown up in your logs. As a resistant starch, it passes undigested to the colon where gut bacteria ferment it into butyrate — a compound that reduces inflammation and supports the gut lining.',
-      tip: 'It works best after at least a month grain-free and low-sugar. Introducing it too early can cause bloating.',
+      tip: 'It works best after at least a month grain-free and low-sugar. Introducing it too early may cause bloating.',
       // Rationale: Potato starch is a Type 2 resistant starch — passes
       // undigested to the colon where it undergoes fermentation, producing
       // short-chain fatty acids (butyrate) that support colonocyte health
@@ -13142,6 +13192,11 @@ var InsightEngine = (function() {
       if (excludeIds[rule.id]) return;         // already shown in active section
 
       // Per-rule window: windowDays field overrides default unless caller forces a window
+      // Guard: if caller is forcing a long window (runOlder), skip rules designed for ≤14 days.
+      // These rules (SM02, FQ9, FQ12, HT1, HT2, HTP etc.) have logic tied to recency
+      // and aren't meaningful at 60-day scale.
+      if (windowOverrideMs && rule.windowDays && rule.windowDays <= 14) return;
+
       var ruleWindowMs = windowOverrideMs ||
         (rule.windowDays ? CONFIG.DAY * rule.windowDays : PATTERN_WINDOW_MS);
       var cutoff = now - ruleWindowMs;
@@ -13150,9 +13205,17 @@ var InsightEngine = (function() {
       if (count < rule.threshold) return;
 
       var strength = count >= 5 ? 'strong' : count >= 3 ? 'medium' : 'weak';
-      if (strength === 'weak') return;         // show medium+ only
+
+      // SM02 and SM04 are time-sensitive early-window rules — surface at weak tier
+      // with a softer label. Their 14-day window means they expire before threshold:3
+      // would ever be met, making them permanently dead at the standard gate.
+      var isEarlySignalRule = (rule.id === 'SM02' || rule.id === 'SM04');
+      if (strength === 'weak' && !isEarlySignalRule) return;
 
       var windowLabel = rule.windowDays ? rule.windowDays : 30;
+      var subLabel = (strength === 'weak' && isEarlySignalRule)
+        ? 'Early signal'
+        : strength.charAt(0).toUpperCase() + strength.slice(1) + ' pattern';
 
       results.push({
         type:        'pattern',
@@ -13160,7 +13223,7 @@ var InsightEngine = (function() {
         icon:        rule.icon,
         text:        rule._sm08DynText || rule._sm06DynText || rule._sm05DynText || rule._sm04DynText || rule._sm01DynText || rule._sm02DynText || rule._sm03DynText || rule.text,
         tip:         rule.tip || null,
-        subLabel:    strength.charAt(0).toUpperCase() + strength.slice(1) + ' pattern',
+        subLabel:    subLabel,
         strength:    strength,
         priority:    rule.priority,
         count:       count,
@@ -13176,6 +13239,20 @@ var InsightEngine = (function() {
       if (sb !== sa) return sb - sa;
       if (b.priority !== a.priority) return b.priority - a.priority;
       return b.count - a.count;
+    });
+
+    // Dedup: if two rules share the same inputTag + outputType + outputKey,
+    // keep only the highest-priority one (already sorted above).
+    // Prevents FQ3+D2, G7+FQ1 etc. from both showing for the same signal.
+    var seenSignals = {};
+    results = results.filter(function(r) {
+      var rule = PATTERN_RULES.filter(function(pr) { return pr.id === r.id; })[0];
+      if (!rule) return true; // trend rules with no inputTag — always keep
+      var sigKey = (rule.inputTag || '') + '|' + (rule.outputType || '') + '|' + (rule.outputKey || '');
+      if (!rule.inputTag) return true; // SM/HT rules with null inputTag — always keep
+      if (seenSignals[sigKey]) return false;
+      seenSignals[sigKey] = true;
+      return true;
     });
 
     return results;
@@ -13727,7 +13804,7 @@ var InsightEngine = (function() {
         var entry = itemSlots[id];
         if (entry.total < 5) return; // need meaningful sample
         var slotKeys = Object.keys(entry.slots).filter(function(k) { return entry.slots[k] > 0; });
-        if (slotKeys.length < 2) return; // only flag if appearing in 2+ different slots
+        if (slotKeys.length < 3) return; // only flag if appearing in 3+ different slots
         candidates06.push({ name: entry.name, slots: entry.slots, total: entry.total });
       });
 
@@ -13741,7 +13818,7 @@ var InsightEngine = (function() {
         return top06.slots[k] + ' ' + k + (top06.slots[k] > 1 ? 's' : '');
       });
       rule._sm06DynText = 'You\'ve been logging ' + top06.name + ' at different times — ' + slotParts.join(', ') + '. Consistency with timing can help your body make the most of it.';
-      return candidates06.length; // count = number of items with this pattern
+      return top06.total; // occurrence count for most-varied item (feeds confidence tier correctly)
     }
 
     // SM08: insulin-sensitivity supps logged 10+ days + glucose trending lower
@@ -16343,6 +16420,8 @@ var ScreenMeals = (function() {
   var _pendingSlot   = null;
   var _pendingAction = null;
   var _MAX_RECENT    = 12;  // max recent food chips to show
+  var _editingId     = null; // id of meal entry being edited
+  var _editTimePicker = null; // custom time picker instance for edit sheet
 
   // ── Auto-tagger ────────────────────────────────────────────
   var _tagMap = [
@@ -16492,6 +16571,90 @@ var ScreenMeals = (function() {
     return d.getTime();
   }
 
+  // ── Meal edit sheet ────────────────────────────────────────
+  function _openEditSheet(id) {
+    var entry = (State.get().logs.meals || []).find(function(e) { return e.id === id; });
+    if (!entry) return;
+    _editingId = id;
+
+    // Pre-fill text
+    var textEl = document.getElementById('meal-edit-text');
+    if (textEl) textEl.value = entry.text || '';
+
+    // Pre-select slot pill
+    document.querySelectorAll('#meal-edit-slot-pills .wt-tod-pill').forEach(function(p) {
+      p.classList.toggle('selected', p.dataset.slot === entry.slot);
+    });
+
+    // Pre-fill time picker
+    var timeStr = entry.mealTs
+      ? (function() {
+          var d = new Date(entry.mealTs);
+          return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+        })()
+      : _nowTimeStr();
+    var pickerEl = document.getElementById('meal-edit-time-picker');
+    if (pickerEl) {
+      _editTimePicker = Components.buildTimePicker(pickerEl, timeStr, function(val) {
+        var parts = val.split(':');
+        var hour = parseInt(parts[0], 10);
+        var autoSlot = hour < 11 ? 'breakfast' : hour < 15 ? 'lunch' : hour < 20 ? 'dinner' : 'snack';
+        document.querySelectorAll('#meal-edit-slot-pills .wt-tod-pill').forEach(function(p) {
+          p.classList.toggle('selected', p.dataset.slot === autoSlot);
+        });
+      });
+    }
+
+    Components.openSheet('sheet-meal-edit');
+  }
+
+  function _saveEdit() {
+    if (!_editingId) return;
+    var textEl = document.getElementById('meal-edit-text');
+    var newText = textEl ? Utils.cleanText(textEl.value) : '';
+    if (!newText) {
+      Components.toast('Description can\'t be empty');
+      return;
+    }
+
+    var slotEl = document.querySelector('#meal-edit-slot-pills .wt-tod-pill.selected');
+    var newSlot = slotEl ? slotEl.dataset.slot : null;
+
+    var newTimeStr = _editTimePicker ? _editTimePicker.getValue() : null;
+    var newMealTs  = newTimeStr ? _timeStrToTs(newTimeStr) : null;
+
+    // Capture old entry for undo before mutating
+    var logs = State.get().logs.meals || [];
+    var oldEntry = logs.find(function(e) { return e.id === _editingId; });
+    if (!oldEntry) { Components.closeSheet('sheet-meal-edit'); return; }
+
+    var oldSnapshot = JSON.parse(JSON.stringify(oldEntry));
+    var editId = _editingId;
+
+    // Apply patch — text and slot change; tags stay as originally computed
+    State.removeLog('meals', editId);
+    var updated = JSON.parse(JSON.stringify(oldSnapshot));
+    updated.text = newText;
+    if (newSlot)   updated.slot   = newSlot;
+    if (newMealTs) { updated.mealTs = newMealTs; updated.ts = newMealTs; }
+    State.pushLog('meals', updated);
+    Storage.sched();
+
+    Components.closeSheet('sheet-meal-edit');
+    requestAnimationFrame(function() {
+      render();
+      ScreenToday.render();
+      Components.toast('Entry updated', function() {
+        // Undo: remove the edited entry, restore original
+        State.removeLog('meals', editId);
+        State.pushLog('meals', oldSnapshot);
+        Storage.sched();
+        render();
+        ScreenToday.render();
+      });
+    });
+  }
+
   // ── Sheet open ─────────────────────────────────────────────
   function _openEntrySheet(action, slot) {
     _pendingSlot   = slot;
@@ -16597,6 +16760,9 @@ var ScreenMeals = (function() {
         html += '<button class="hyd-log-delete meals-log-delete" data-meal-id="' + Utils.esc(e.id) + '" aria-label="Delete">'
           + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>'
           + '</button>';
+        html += '<button class="meals-log-edit" data-meal-edit-id="' + Utils.esc(e.id) + '" aria-label="Edit">'
+          + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+          + '</button>';
         html += '</div></div>';
       });
       el.innerHTML = html; // [SAFE: Utils.esc()]
@@ -16627,6 +16793,30 @@ var ScreenMeals = (function() {
         ScreenToday.render();
       } : null);
     });
+
+    // Edit meal entry — open edit sheet
+    document.getElementById('screen-meals').addEventListener('click', function(e) {
+      var btn = e.target.closest('.meals-log-edit[data-meal-edit-id]');
+      if (!btn) return;
+      _openEditSheet(btn.dataset.mealEditId);
+    });
+
+    // Edit sheet — close
+    document.getElementById('meal-edit-close-btn').addEventListener('click', function() {
+      Components.closeSheet('sheet-meal-edit');
+    });
+
+    // Edit sheet — slot pill selection
+    document.getElementById('meal-edit-slot-pills').addEventListener('click', function(e) {
+      var pill = e.target.closest('.wt-tod-pill[data-slot]');
+      if (!pill) return;
+      document.querySelectorAll('#meal-edit-slot-pills .wt-tod-pill').forEach(function(p) {
+        p.classList.toggle('selected', p === pill);
+      });
+    });
+
+    // Edit sheet — save
+    document.getElementById('meal-edit-save-btn').addEventListener('click', _saveEdit);
 
     // Supp/med management shortcut → You screen
     document.getElementById('meals-settings-btn').addEventListener('click', function() {
@@ -19563,6 +19753,362 @@ var DevHarness = (function() {
       }
     },
 
+
+    // ── Coffee timing — cortisol concern (FQ9) ───────────────
+    // FQ9: coffee logged within 90 min of wakeTimeWeekday on 3+ of last 14 days.
+    // Profile seeds wakeTimeWeekday so the rule has an anchor to compare against.
+    // Coffees at 07:20 local = 20 min after a 07:00 wake → inside 90-min window.
+    {
+      id: 'fq9',
+      label: 'Coffee timing — cortisol concern (FQ9)',
+      desc: 'Triggers FQ9: coffee within 90 min of waking on weekdays',
+      build: function(now) {
+        var hydration = [];
+        var uid = function(i) { return 'dev-fq9-' + i; };
+
+        function localMidnight(dAgo) {
+          var d = new Date();
+          d.setDate(d.getDate() - dAgo);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }
+
+        // 5 weekdays in last 14 days — coffee at 07:20 (20 min after 07:00 wake)
+        // Engine checks isWeekend via getDay(). Pick days 1-5,8-9 which are
+        // guaranteed non-weekend relative to today; engine uses wakeTimeWeekday fallback
+        // when wakeTimeWeekend is also set — seeding both keeps anchor resolution clean.
+        [1, 2, 3, 4, 5, 8, 9].forEach(function(dAgo, i) {
+          var midnight = localMidnight(dAgo);
+          hydration.push({
+            id: uid(i), ts: midnight + (7 * 3600000) + (20 * 60000), // 07:20 local
+            oz: 12, type: 'coffee'
+          });
+        });
+
+        return { hydration: hydration };
+      }
+    },
+
+    // ── Coffee timing — positive habit (FQ12) ────────────────
+    // FQ12: coffee logged 90+ min after wakeTimeWeekday on 3+ of last 14 days.
+    // Suppressed if FQ9 also qualifies — so this payload must NOT have any
+    // coffee inside the 90-min window. Coffees at 09:00 local (120 min after 07:00).
+    {
+      id: 'fq12',
+      label: 'Coffee timing — positive habit (FQ12)',
+      desc: 'Triggers FQ12: coffee 90+ min after waking — positive cortisol timing',
+      build: function(now) {
+        var hydration = [];
+        var uid = function(i) { return 'dev-fq12-' + i; };
+
+        function localMidnight(dAgo) {
+          var d = new Date();
+          d.setDate(d.getDate() - dAgo);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }
+
+        // 7 days — coffee at 09:00 (120 min after 07:00 wake) — all outside 90-min window
+        [1, 2, 3, 4, 5, 8, 9].forEach(function(dAgo, i) {
+          var midnight = localMidnight(dAgo);
+          hydration.push({
+            id: uid(i), ts: midnight + (9 * 3600000), // 09:00 local
+            oz: 12, type: 'coffee'
+          });
+        });
+
+        return { hydration: hydration };
+      }
+    },
+
+    // ── Missed dose + symptom gap (SM04) ─────────────────────
+    // SM04: morning slot logged 5+ of 7 days over 14-day history,
+    // then 2+ consecutive missed days, then a symptom logged.
+    // Threshold: 2 (Early signal). Surfaces at weak tier.
+    {
+      id: 'sm04',
+      label: 'Missed dose correlation (SM04)',
+      desc: 'Triggers SM04: morning supplement gap followed by symptoms — Early signal',
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var suppLogs = [];
+        var symptoms = [];
+        var uid = function(pfx, i) { return 'dev-sm04-' + pfx + '-' + i; };
+
+        var suppId = 'dev-sm04-supp-01';
+        var supplement = {
+          id: suppId,
+          name: 'Magnesium (SM04 test)',
+          dose: '400 mg', doseUnit: 'mg',
+          slots: ['morning'],
+          cat: 'Sleep & Relaxation',
+          fx: ['fatigue', 'headache'],
+          sideEffects: ['fatigue', 'headache'],
+          benefits: ['sleep', 'muscle', 'mood'],
+          brandNames: [], changeLog: [],
+          addedTs: now - (20 * DAY)
+        };
+
+        // Logged morning slot on days 14, 13, 12, 11, 10, 9, 8 — 7 distinct days (5+ satisfied)
+        [14, 13, 12, 11, 10, 9, 8].forEach(function(dAgo, i) {
+          suppLogs.push({
+            id: uid('log', i), ts: now - (dAgo * DAY) + (8 * HOUR),
+            slot: 'morning', logType: 'individual', groupLabel: null,
+            items: [{ itemId: suppId, name: 'Magnesium (SM04 test)', itemType: 'supp', dose: '400 mg' }]
+          });
+        });
+
+        // Gap: days 6 and 7 ago NOT logged (2 consecutive missing)
+        // Days 5, 4, 3 ago also missing — gap continues (keeps consecutiveMissing >= 2)
+
+        // Symptom logged on day 5 ago (after gap started on day 6)
+        [5, 4, 3].forEach(function(dAgo, i) {
+          symptoms.push({
+            id: uid('sym', i), ts: now - (dAgo * DAY) + (10 * HOUR),
+            symptoms: ['headache'], severity: 1, note: ''
+          });
+        });
+
+        return {
+          suppLogs: suppLogs,
+          symptoms: symptoms,
+          supplements: [supplement],
+          medications: []
+        };
+      }
+    },
+
+    // ══════════════════════════════════════════════════════════
+    // NEGATIVE TEST SCENARIOS
+    // Purpose: prove rules stay SILENT on clean data.
+    // "Nothing firing" IS the expected outcome — not a bug.
+    // Each scenario loads logs that are deliberately mismatched:
+    // inputs without matching outputs, or outputs without inputs.
+    // ══════════════════════════════════════════════════════════
+
+    // ── Negative: Diet (D-series) ─────────────────────────────
+    // Logs dairy/spicy/processed meals but NO matching bowel symptoms.
+    // D1–D9 should all stay silent.
+    {
+      id: 'neg_diet',
+      label: 'Negative — Diet (D-series)',
+      desc: 'Meals logged, NO symptom outputs. All D-series rules should stay silent.',
+      isNegative: true,
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var meals = [];
+        var uid = function(i) { return 'dev-nd-' + i; };
+
+        [2, 4, 6, 8, 10, 12].forEach(function(dAgo, i) {
+          meals.push({
+            id: uid(i), ts: now - (dAgo * DAY) + (18 * HOUR),
+            mealTs: now - (dAgo * DAY) + (18 * HOUR),
+            slot: 'dinner', type: 'food',
+            text: 'Dairy and spicy meal', tags: ['dairy', 'spicy', 'high_fat']
+          });
+        });
+
+        // Bowel logs present but NO symptoms array entries
+        var bowel = [];
+        [2, 4, 6].forEach(function(dAgo, i) {
+          bowel.push({
+            id: uid(i) + 'b', ts: now - (dAgo * DAY) + (22 * HOUR),
+            bristolType: 4, color: 'brown', symptoms: [] // no symptoms
+          });
+        });
+
+        return { meals: meals, bowel: bowel, hydration: [] };
+      }
+    },
+
+    // ── Negative: Glucose (G-series) ──────────────────────────
+    // Logs sugar/refined carb meals but glucose readings stay NORMAL (≤100).
+    // G1, G2, G4 should not fire. G7 might fire (that's intentional — it's
+    // the POSITIVE rule for balanced meals staying stable; tested separately).
+    {
+      id: 'neg_glucose',
+      label: 'Negative — Glucose (G-series)',
+      desc: 'Sugar meals logged, but glucose readings stay normal. Spike rules should stay silent.',
+      isNegative: true,
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var meals = [];
+        var glucose = [];
+        var uid = function(pfx, i) { return 'dev-ng-' + pfx + i; };
+
+        [2, 5, 8, 11, 14].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (14 * HOUR);
+          meals.push({
+            id: uid('m', i), ts: mts, mealTs: mts,
+            slot: 'lunch', type: 'food',
+            text: 'Cake and soda', tags: ['sugar', 'refined_carbs']
+          });
+          // Glucose stays well under 140 — no spike
+          glucose.push({ id: uid('g', i), ts: mts + HOUR, val: 95, context: 'after_meal' });
+        });
+
+        return { meals: meals, glucose: glucose };
+      }
+    },
+
+    // ── Negative: Blood pressure (BP-series) ──────────────────
+    // Logs alcohol + caffeine drinks but BP readings stay NORMAL (<130 sys).
+    // BP1–BP4 should stay silent.
+    {
+      id: 'neg_bp',
+      label: 'Negative — Blood pressure (BP-series)',
+      desc: 'Alcohol and caffeine logged, BP readings stay normal. All BP rules should stay silent.',
+      isNegative: true,
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var hydration = [];
+        var bp        = [];
+        var uid = function(pfx, i) { return 'dev-nbp-' + pfx + i; };
+
+        [2, 5, 8, 11, 14].forEach(function(dAgo, i) {
+          var ts = now - (dAgo * DAY) + (19 * HOUR);
+          hydration.push({ id: uid('a', i), ts: ts, oz: 8, type: 'alcohol' });
+          // BP stays normal — well under 130 systolic
+          bp.push({ id: uid('b', i), ts: ts + (3 * HOUR), sys: 118, dia: 76, hr: 68, timeOfDay: 'evening', crisis: false });
+        });
+
+        return { hydration: hydration, bp: bp };
+      }
+    },
+
+    // ── Negative: Food quality (FQ-series) ───────────────────
+    // Logs coffee close to wake time for only 1 day (below threshold).
+    // Logs high_fiber meals with no corresponding improved stool.
+    // FQ rules should stay silent (below 3-occurrence threshold).
+    {
+      id: 'neg_fq',
+      label: 'Negative — Food quality (FQ-series)',
+      desc: 'Single coffee near wake, fiber meals with no stool improvement. FQ rules should stay silent.',
+      isNegative: true,
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var meals = [];
+        var bowel  = [];
+        var uid = function(pfx, i) { return 'dev-nfq-' + pfx + i; };
+
+        function localMidnight(dAgo) {
+          var d = new Date();
+          d.setDate(d.getDate() - dAgo);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }
+
+        // Only 1 coffee near wake — below threshold of 3
+        var midnight = localMidnight(2);
+        var hydration = [{ id: uid('c', 0), ts: midnight + (7.25 * 3600000), oz: 12, type: 'coffee' }];
+
+        // High fiber meals logged but stool is poor (Bristol 6-7), not improved (3-4)
+        [3, 6, 9].forEach(function(dAgo, i) {
+          var mts = now - (dAgo * DAY) + (8 * HOUR);
+          meals.push({
+            id: uid('f', i), ts: mts, mealTs: mts,
+            slot: 'breakfast', type: 'food',
+            text: 'Oats and psyllium', tags: ['high_fiber']
+          });
+          bowel.push({
+            id: uid('fb', i), ts: mts + (6 * HOUR),
+            bristolType: 7, color: 'brown', symptoms: ['urgency'] // not improved
+          });
+        });
+
+        return { meals: meals, bowel: bowel, hydration: hydration };
+      }
+    },
+
+    // ── Negative: Supplements (SM-series) ────────────────────
+    // Logs supplements consistently with NO matching symptoms.
+    // SM01, SM02, SM04 should all stay silent.
+    {
+      id: 'neg_sm',
+      label: 'Negative — Supplements (SM-series)',
+      desc: 'Supplements logged consistently, no symptoms noted. SM rules should stay silent.',
+      isNegative: true,
+      build: function(now) {
+        var DAY  = 86400000;
+        var HOUR = 3600000;
+        var suppLogs = [];
+        var uid = function(i) { return 'dev-nsm-' + i; };
+
+        var suppId = 'dev-nsm-supp-01';
+        var supplement = {
+          id: suppId,
+          name: 'Fish Oil (neg test)',
+          dose: '1200 mg', doseUnit: 'mg',
+          slots: ['morning'],
+          cat: 'Heart Health',
+          fx: ['nausea', 'fishy_breath'],
+          sideEffects: ['nausea', 'fishy_breath'],
+          benefits: ['heart', 'inflammation', 'brain'],
+          brandNames: [], changeLog: [],
+          addedTs: now - (20 * DAY) // not new — outside SM02 14-day window
+        };
+
+        // Logged every morning for 14 days — consistent, no gap (SM04 won't fire)
+        [14,13,12,11,10,9,8,7,6,5,4,3,2,1].forEach(function(dAgo, i) {
+          suppLogs.push({
+            id: uid(i), ts: now - (dAgo * DAY) + (8 * HOUR),
+            slot: 'morning', logType: 'individual', groupLabel: null,
+            items: [{ itemId: suppId, name: 'Fish Oil (neg test)', itemType: 'supp', dose: '1200 mg' }]
+          });
+        });
+
+        // No symptoms at all — SM01 stays silent
+        return {
+          suppLogs: suppLogs,
+          symptoms: [],
+          supplements: [supplement],
+          medications: []
+        };
+      }
+    },
+
+    // ── Negative: Hydration (HT-series) ──────────────────────
+    // Logs hydration with GOOD timing (before 10am, spread through day)
+    // AND meeting goal. HT1 and HT2 should stay silent. HTP may fire —
+    // that's correct behaviour (positive rule for good habit).
+    {
+      id: 'neg_ht',
+      label: 'Negative — Hydration timing (HT-series)',
+      desc: 'Good hydration timing and volume. HT1 + HT2 concern rules should stay silent.',
+      isNegative: true,
+      build: function(now) {
+        var hydration = [];
+        var uid = function(pfx, i) { return 'dev-nht-' + pfx + '-' + i; };
+
+        function localMidnight(dAgo) {
+          var d = new Date();
+          d.setDate(d.getDate() - dAgo);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }
+
+        [1,2,3,4,5,6,7].forEach(function(dAgo, i) {
+          var midnight = localMidnight(dAgo);
+          // 6:45am — before 10am, clears HT1 late-start check
+          hydration.push({ id: uid('a', i), ts: midnight + (6.75 * 3600000), oz: 20, type: 'water' });
+          // 11am
+          hydration.push({ id: uid('b', i), ts: midnight + (11 * 3600000), oz: 20, type: 'water' });
+          // 3pm
+          hydration.push({ id: uid('c', i), ts: midnight + (15 * 3600000), oz: 20, type: 'water' });
+          // 5pm (before 6pm — evening % stays low, HT2 stays silent)
+          hydration.push({ id: uid('d', i), ts: midnight + (17 * 3600000), oz: 20, type: 'water' });
+          // Total: 80oz = 100% of goal. Evening: 0oz after 6pm = 0%. HT1+HT2 silent, HTP fires.
+        });
+
+        return { hydration: hydration };
+      }
+    },
+
   ]; // end SCENARIOS
 
   // ── Build payload ────────────────────────────────────────────
@@ -19625,12 +20171,30 @@ var DevHarness = (function() {
   function _renderList() {
     var list = document.getElementById('dev-scenario-list');
     if (!list) return;
-    list.innerHTML = SCENARIOS.map(function(s) {
-      return '<button class="btn-ghost" style="text-align:left;padding:14px 16px;" data-scenario-id="' + s.id + '">'
+
+    var positive = SCENARIOS.filter(function(s) { return !s.isNegative; });
+    var negative = SCENARIOS.filter(function(s) { return !!s.isNegative; });
+
+    function _btnHtml(s) {
+      var borderColor = s.isNegative ? '#2e7d32' : 'var(--brd)';
+      return '<button class="btn-ghost" style="text-align:left;padding:14px 16px;border-color:' + borderColor + ';" data-scenario-id="' + s.id + '">'
         + '<div style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:3px;">' + s.label + '</div>'
         + '<div style="font-size:12px;color:var(--mt);line-height:1.4;">' + s.desc + '</div>'
         + '</button>';
-    }).join('');
+    }
+
+    var html = '';
+
+    // Positive test group
+    html += '<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--mt);margin-bottom:8px;margin-top:4px;">▶ Positive Tests — rules should fire</div>';
+    html += positive.map(_btnHtml).join('');
+
+    // Negative test group
+    html += '<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#2e7d32;margin-bottom:8px;margin-top:20px;">✓ Negative Tests — expect silence</div>';
+    html += '<div style="font-size:12px;color:var(--mt);margin-bottom:10px;line-height:1.4;">These scenarios load clean or mismatched data. <strong>Zero insights on the Insights screen = test passed.</strong></div>';
+    html += negative.map(_btnHtml).join('');
+
+    list.innerHTML = html;
 
     list.addEventListener('click', function(e) {
       var btn = e.target.closest('[data-scenario-id]');
@@ -19639,7 +20203,22 @@ var DevHarness = (function() {
       if (!sc) return;
       _selectedScenario = sc;
       var label = document.getElementById('dev-confirm-scenario');
-      if (label) label.textContent = sc.label + ' — ' + sc.desc;
+      var labelNeg = document.getElementById('dev-confirm-scenario-neg');
+      var titleEl = document.getElementById('dev-confirm-title');
+      var dangerBox = document.getElementById('dev-confirm-box-danger');
+      var negBox = document.getElementById('dev-confirm-box-negative');
+      if (sc.isNegative) {
+        if (titleEl) titleEl.textContent = 'Load negative test?';
+        if (label) label.textContent = '';
+        if (labelNeg) labelNeg.textContent = sc.label + ' — ' + sc.desc;
+        if (dangerBox) dangerBox.style.display = 'none';
+        if (negBox) negBox.style.display = 'block';
+      } else {
+        if (titleEl) titleEl.textContent = 'Load test data?';
+        if (label) label.textContent = sc.label + ' — ' + sc.desc;
+        if (dangerBox) dangerBox.style.display = 'block';
+        if (negBox) negBox.style.display = 'none';
+      }
       _goTo(3);
     });
   }
@@ -19703,6 +20282,11 @@ var DevHarness = (function() {
       var btn = document.getElementById('dev-load-btn');
       if (inp) { inp.value = ''; inp.classList.remove('ready'); }
       if (btn) btn.disabled = true;
+      // Show/hide negative reminder on panel 4
+      var negReminder = document.getElementById('dev-negative-reminder');
+      if (negReminder) negReminder.style.display = (_selectedScenario && _selectedScenario.isNegative) ? 'block' : 'none';
+      var handleEl = document.getElementById('dev-panel-4-handle');
+      if (handleEl) handleEl.style.background = (_selectedScenario && _selectedScenario.isNegative) ? '#2e7d32' : '#b42828';
       _goTo(4);
     });
 
